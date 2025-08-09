@@ -1,0 +1,232 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.message.domain.MessageMapper">
+
+
+  <!-- 메시지 목록 조회 -->
+  <select id="findMessageList"
+          parameterType="net.lotte.chamomile.admin.message.api.dto.MessageQuery"
+          resultType="net.lotte.chamomile.admin.message.domain.MessageVO">
+      SELECT
+        TA0.CODE                                  /* 코드값 */
+        , TA0.COUNTRY_CODE countryCode            /* 국가코드 */
+        , TA0.LANGUAGE_CODE languageCode          /* 언어코드 */
+        , C.MESSAGE message                       /* 언어별메시지 */
+        , C.SYS_INSERT_DTM sysInsertDtm           /* 최초 생성시간 */
+        , C.SYS_INSERT_USER_ID sysInsertUserId    /* 최초 생성자아이디 */
+        , C.SYS_UPDATE_DTM sysUpdateDtm           /* 마지막 수정시간 */
+        , C.SYS_UPDATE_USER_ID sysUpdaetUserId    /* 마지막 수정 아이디 */
+      FROM (
+        SELECT A.CODE
+              , B.COUNTRY_CODE
+              , B.LANGUAGE_CODE
+        FROM (SELECT DISTINCT CODE FROM CHMM_MESSAGE_SOURCE_INFO) A
+              , CHMM_LANGUAGE_INFO B
+      <where>
+        <if test="searchType != null and searchType.equals('searchCode') and searchText != null and searchText != ''"> AND A.CODE LIKE CONCAT(CONCAT('%', #{searchText}), '%')    </if>
+        <if test="searchType != null and searchType.equals('searchLanguageCode') and searchText != null and searchText != ''"> AND B.LANGUAGE_CODE LIKE CONCAT(CONCAT('%', #{searchText}), '%')  </if>
+        <if test="searchType != null and searchType.equals('searchCountryCode') and searchText != null and searchText != ''"> AND B.COUNTRY_CODE LIKE CONCAT(CONCAT('%', #{searchText}), '%')  </if>
+        <if test="searchCodeCategory != null and searchCodeCategory != ''"> AND A.CODE LIKE CONCAT(#{searchCodeCategory}, '.%')  </if>
+        <if test="searchLanguageCode != null and searchLanguageCode != ''"> AND B.LANGUAGE_CODE = #{searchLanguageCode}  </if>
+        <if test="searchCountryCode != null and searchCountryCode != ''"> AND B.COUNTRY_CODE = #{searchCountryCode}  </if>
+      </where>
+           ) TA0
+      LEFT JOIN CHMM_MESSAGE_SOURCE_INFO C
+          ON C.CODE = TA0.CODE
+          AND C.COUNTRY_CODE = TA0.COUNTRY_CODE
+          AND C.LANGUAGE_CODE = TA0.LANGUAGE_CODE
+    <where>
+      <if test="searchType != null and searchType.equals('searchMessage') and searchText != null and searchText != ''"> AND C.MESSAGE LIKE CONCAT(CONCAT('%', #{searchText}), '%') </if>
+      <if test="searchRegYn != null and searchRegYn != ''">
+        <if test="searchRegYn.equals('1'.toString())">
+          AND C.CODE IS NOT NULL
+        </if>
+        <if test="searchRegYn.equals('0'.toString())">
+          AND C.CODE IS NULL
+        </if>
+      </if>
+    </where>
+      ORDER BY TA0.CODE, TA0.COUNTRY_CODE, TA0.LANGUAGE_CODE
+  </select>
+
+	<!-- 메시지 상세 조회 -->
+	<select id="findMessageDetail"
+          parameterType="net.lotte.chamomile.admin.message.api.dto.MessageQuery"
+          resultType="net.lotte.chamomile.admin.message.domain.MessageVO">
+		SELECT CODE code							/* 코드값 */
+			 , LANGUAGE_CODE languageCode			/* 국가코드 */
+			 , COUNTRY_CODE countryCode				/* 언어코드 */
+			 , MESSAGE message						/* 언어별메시지 */
+			 , SYS_INSERT_DTM sysInsertDtm			/* 최초 생성시간 */
+			 , SYS_INSERT_USER_ID sysInsertUserId	/* 최초 생성자아이디 */
+			 , SYS_UPDATE_DTM sysUpdateDtm			/* 마지막 수정시간 */
+			 , SYS_UPDATE_USER_ID sysUpdaetUserId	/* 마지막 수정 아이디 */
+		FROM CHMM_MESSAGE_SOURCE_INFO
+		<where>
+			<if test="searchCode != null and searchCode != ''"> AND CODE = #{searchCode} </if>
+		</where>
+	</select>
+
+	<!-- 메시지 존재 여부 조회 -->
+	<select id="existsByKey" resultType="boolean">
+		SELECT DISTINCT 1 as temp FROM CHMM_MESSAGE_SOURCE_INFO WHERE
+		<foreach collection="list" item="item" index="index" separator=" OR ">
+			(CODE = #{item.code} AND LANGUAGE_CODE = COALESCE(#{item.languageCode}, ' ') AND COUNTRY_CODE = COALESCE(#{item.countryCode}, ' '))
+		</foreach>
+	</select>
+
+	<!-- 메시지 생성 -->
+	<insert id="insertMessage">
+		INSERT INTO CHMM_MESSAGE_SOURCE_INFO (
+			CODE
+			, LANGUAGE_CODE
+			, COUNTRY_CODE
+			, MESSAGE
+			, USE_YN
+			, SYS_INSERT_DTM
+			, SYS_INSERT_USER_ID
+			, SYS_UPDATE_DTM
+			, SYS_UPDATE_USER_ID
+		) VALUES (
+			#{code}
+			, #{languageCode}
+			, #{countryCode}
+			, #{message}
+			, 1
+			, #{sysInsertDtm}
+			, #{sysInsertUserId}
+			, #{sysUpdateDtm}
+			, #{sysUpdateUserId}
+		)
+	</insert>
+
+	<!-- 메시지 삭제 -->
+	<delete id="deleteMessage">
+		DELETE FROM CHMM_MESSAGE_SOURCE_INFO
+		WHERE
+		<foreach collection="list" item="item" index="index" open="" separator=" or " close="" >
+			(CODE = #{item.code}
+        and LANGUAGE_CODE = COALESCE(#{item.languageCode}, ' ')
+        and COUNTRY_CODE = COALESCE(#{item.countryCode}, ' ')
+			)
+		</foreach>
+	</delete>
+
+	<delete id="deleteMessageForInsert">
+		DELETE FROM CHMM_MESSAGE_SOURCE_INFO
+		WHERE CODE = #{code}
+	</delete>
+
+	<!-- 언어코드 개수 조회 -->
+	<select id="languageCnt" resultType="Integer">
+		SELECT COUNT(*) cnt
+		FROM CHMM_LANGUAGE_INFO
+		<where>
+			AND LANGUAGE_CODE = #{languageCode}
+			AND COUNTRY_CODE = #{countryCode}
+		</where>
+	</select>
+
+  <!-- 언어코드의 메시지 갯수 조회 -->
+  <select id="languageMessageCnt" resultType="Integer">
+    SELECT
+        COUNT(B.CODE) messageCount /* 메시지 갯수 */
+    FROM CHMM_LANGUAGE_INFO A
+    JOIN CHMM_MESSAGE_SOURCE_INFO B
+         ON B.LANGUAGE_CODE = A.LANGUAGE_CODE
+        AND B.COUNTRY_CODE = A.COUNTRY_CODE
+    <where>
+      AND A.LANGUAGE_CODE = #{languageCode}
+      AND A.COUNTRY_CODE = #{countryCode}
+    </where>
+  </select>
+
+	<!-- 언어코드 저장 -->
+	<insert id="insertLanguage">
+		INSERT INTO CHMM_LANGUAGE_INFO (
+			LANGUAGE_CODE
+			, COUNTRY_CODE
+			, DESCRIPTION
+			, SYS_INSERT_DTM
+			, SYS_INSERT_USER_ID
+			, SYS_UPDATE_DTM
+			, SYS_UPDATE_USER_ID
+		) VALUES (
+			#{languageCode}
+			, #{countryCode}
+			, #{description}
+			, #{sysInsertDtm}
+			, #{sysInsertUserId}
+			, #{sysUpdateDtm}
+			, #{sysUpdateUserId}
+		)
+	</insert>
+
+  <!-- 언어코드 수정 -->
+  <update id="updateLanguage">
+    UPDATE CHMM_LANGUAGE_INFO
+    <set>
+      <if test="!languageCode.equals(prevLanguageCode)">, LANGUAGE_CODE = #{languageCode}</if>
+      <if test="!countryCode.equals(prevCountryCode)">, COUNTRY_CODE = #{countryCode}</if>
+       , DESCRIPTION = #{description}
+       , SYS_UPDATE_DTM = #{sysUpdateDtm}
+       , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+    </set>
+    WHERE LANGUAGE_CODE = #{prevLanguageCode}
+    AND COUNTRY_CODE = #{prevCountryCode}
+  </update>
+
+  <!-- 메시지의 언어코드 수정 -->
+  <update id="updateMessageLanguage">
+    UPDATE CHMM_MESSAGE_SOURCE_INFO
+    SET LANGUAGE_CODE = #{languageCode}
+      , COUNTRY_CODE = #{countryCode}
+      , SYS_UPDATE_DTM = #{sysUpdateDtm}
+      , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+    WHERE LANGUAGE_CODE = #{prevLanguageCode}
+      AND COUNTRY_CODE = #{prevCountryCode}
+  </update>
+
+	<!-- 언어코드 List 조회 -->
+	<select id="findLanguageList" resultType="net.lotte.chamomile.admin.message.domain.LanguageVO">
+		SELECT
+			LANGUAGE_CODE languageCode	/* 언어코드 */
+			, COUNTRY_CODE countryCode	/* 국가코드 */
+			, DESCRIPTION description	/* 설명 */
+		FROM CHMM_LANGUAGE_INFO A
+		ORDER BY SYS_INSERT_DTM DESC
+	</select>
+
+  <!-- 언어코드 상세 조회 -->
+  <select id="findLanguageDetail"
+          parameterType="net.lotte.chamomile.admin.message.api.dto.LanguageQuery"
+          resultType="net.lotte.chamomile.admin.message.domain.LanguageVO">
+    SELECT
+    A.LANGUAGE_CODE languageCode	/* 언어코드 */
+      , A.COUNTRY_CODE countryCode	/* 국가코드 */
+      , A.DESCRIPTION description	/* 설명 */
+    FROM CHMM_LANGUAGE_INFO A
+    <where>
+      <if test="searchLanguageCode != null and searchLanguageCode != ''">AND LANGUAGE_CODE = #{searchLanguageCode} </if>
+      <if test="searchCountryCode != null and searchCountryCode != ''">AND COUNTRY_CODE = #{searchCountryCode} </if>
+    </where>
+  </select>
+
+	<select id="findMessageListByKey" resultType="net.lotte.chamomile.admin.message.domain.MessageVO">
+		SELECT CODE code /* 코드값 */
+			, LANGUAGE_CODE languageCode /* 국가코드 */
+			, COUNTRY_CODE countryCode /* 언어코드 */
+			, MESSAGE message /* 언어별메시지 */
+		FROM CHMM_MESSAGE_SOURCE_INFO
+		WHERE
+		<foreach collection="list" item="item" index="index" separator=" OR ">
+			(CODE = #{item.code} AND LANGUAGE_CODE = COALESCE(#{item.languageCode}, ' ') AND COUNTRY_CODE = COALESCE(#{item.countryCode}, ' '))
+		</foreach>
+	</select>
+
+	<delete id="deleteLanguage">
+		DELETE FROM CHMM_LANGUAGE_INFO
+		WHERE
+			LANGUAGE_CODE = #{languageCode}
+		  AND COUNTRY_CODE = #{countryCode}
+	</delete>
+</mapper>

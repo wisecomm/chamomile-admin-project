@@ -1,0 +1,148 @@
+spring:
+    application:
+        name: chamomile-admin
+    main:
+        allow-bean-definition-overriding: true
+    jpa:
+        defer-datasource-initialization: true
+    redis:
+        cluster:
+            nodes:
+                - 10.131.4.85:8093
+                - 10.131.4.85:8082
+                - 10.131.4.85:8081
+        lettuce:
+            pool:
+                max-active: 8
+                max-idle: 8
+                min-idle: 0
+                max-wait: -1ms
+    hazelcast:
+        config: hazelcast-prod.yml
+
+server:
+    error:
+        whitelabel:
+            enabled: true
+        include-exception: true
+        include-message: always
+        include-stacktrace: always
+    port: 8080
+
+chmm:
+    admin:
+        zip-password: ENC(42w+KY+TBQZ8tBdadiMu60AJawGby6Mp)
+    ##SECURITY
+    security:
+        loginProcessingUrl: /login
+        logoutProcessingUrl: /logout
+        usernameParameter: username
+        passwordParameter: password
+        defaultPasswordEncoder: sha256
+        passwordEncoderList: sha256,bcrypt
+        ignorePatterns:
+            - /security/reload
+            - /security/jwt/refresh-token
+            - /security/jwt/secret-key
+            - /security/jwt/authenticate
+            - /swagger-ui/**
+            - /api-docs/**
+            - /swagger-resources/**
+            - /v3/api-docs/**
+            - /chmm/board/image/download/**
+            - /appstore/**
+            - /chmm/user/check-verify-code
+            - /chmm/user/send-verify-code
+            - /chmm/user/change-password
+            - /chmm/user/email-check
+            - /chmm/user/user-check-id
+            - /chmm/user/register
+            - /chmm/user/user-check-mobile
+            - /security/pre-login
+        # custom
+        2fa:
+            prelogin:
+                check: false
+        autoconfig:
+            use: true
+            rememberMe: true
+            rememberMeValiditySeconds: 604800
+            maximumSessions: -1
+            returnUrl: /index.html
+    jwt:
+        secret: 0PtD9jRs2Q7Cgw38E8CNSBfxSf/ib/mAElN05fhAUU0FXsB3S8F3rfaaCSHy+NWQZkhDbs1SJm+cjdKQX4eHGA==
+        access-expired-time: 1800000 #30분
+        refresh-expired-time: 86400000 #24시간
+    ## JWT CORS
+    cors:
+        configurations:
+            - pattern: "/**"
+              allowed-origins:
+                  - "http://10.131.156.253:3000"
+                  - "http://localhost:8080"
+                  - "http://localhost:23636"
+              allowed-methods:
+                  - "GET"
+                  - "POST"
+              allowed-headers:
+                  - "Authorization"
+                  - "Content-Type"
+              allow-credentials: false
+              max-age: 3600
+
+    #Hikari DataSource
+    jdbc:
+        driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+        jdbcUrl: jdbc:log4jdbc:mysql://10.131.7.143:3306/chamomile3?autoReconnect=true&serverTimezone=UTC&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
+        username: root
+        password: ENC(42w+KY+TBQZ8tBdadiMu60AJawGby6Mp)
+        maximumPoolSize: 10
+        connectionTimeout: 30000
+        maxLifetime: 1800000
+
+    ##MAPPER
+    mapper:
+        interval: 60000
+        refreshable: true
+        config-location: classpath:/sql/config/sqlMapConfig.xml
+        refreshable-mapper-locations:
+            - classpath:/sql/service/*.xml
+#            - classpath*:/sql/service/mobile/*.xml
+        mapper-locations: sql/service/*.xml
+    txPointcut:
+        expression: (execution(* net.lotte.chamomile.admin..*ServiceImpl.*(..)))
+
+    #FILE
+    file:
+        repositoryPath: /opt/files/common
+        allowExtension: ""
+        maxSize: 20MB
+        directoryDateNameFormat: yyyy/MM
+
+    #MAIL
+    mail:
+        from: chamomile@lotte.net
+
+    #MOBILE
+#    mobile:
+#        admin:
+#            controller: true
+#            file: /opt/files/mobile
+
+springdoc:
+    swagger-ui:
+        version: v1.0.0
+        path: /swagger-ui.html
+        groups-order: DESC
+        operationsSorter: method
+        disable-swagger-default-url: true
+        display-request-duration: true
+    api-docs:
+        path: /api-docs
+        groups:
+            enabled: true
+    show-actuator: true
+    default-consumes-media-type: application/json
+    default-produces-media-type: application/json
+    packages-to-scan: net.lotte.chamomile.admin
+

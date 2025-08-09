@@ -1,0 +1,163 @@
+spring:
+    application:
+        name: chamomile-admin # 애플리케이션의 이름을 지정합니다.
+    main:
+        allow-bean-definition-overriding: true # 빈 정의를 재정의할 수 있는지 여부를 설정합니다.
+    sql:
+        init:
+            mode: always # SQL 초기화 모드를 설정합니다.
+    jpa:
+        defer-datasource-initialization: true # JPA의 데이터 소스 초기화를 지연시킬지 여부를 설정합니다.
+    servlet:
+        multipart:
+            max-file-size: 20MB
+            max-request-size: 20MB
+    hazelcast:
+        config: hazelcast.yml
+
+server:
+    tomcat:
+        connection-timeout: 1800000
+    error:
+        whitelabel:
+            enabled: true # Spring Boot의 기본 에러 페이지 사용 여부를 설정합니다.
+        include-exception: true # 예외 정보를 에러 응답에 포함할지 여부를 설정합니다.
+        include-message: always # 에러 메시지를 에러 응답에 포함할지 여부를 설정합니다.
+        include-stacktrace: always # 스택 트레이스를 에러 응답에 포함할지 여부를 설정합니다
+    port: 23636 # 애플리케이션의 포트를 설정합니다.
+
+
+chmm:
+    admin:
+        zip-password: ENC(42w+KY+TBQZ8tBdadiMu60AJawGby6Mp) # 어드민 기본 압축 파일 비밀번호값 설정
+        mail:
+            from: chamomile@lotte.net
+    ##SECURITY
+    security:
+        loginProcessingUrl: /chmm/security/jwt/authenticate #Access토큰 발급
+        refreshProcessingUrl: /chmm/security/jwt/refresh-token #토큰 재발급
+        defaultPasswordEncoder: sha256
+        passwordEncoderList: sha256,bcrypt
+        rsaPassword:
+            use : false
+            privateKey : MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDuf1P3Lat+UvNu50yOb4+yUFJBMYYI9rJITlrKCFuvqVFnhAMD5ZN/ZIPGMFaH3UnsLY2RNDoVIcfF0V6a8cEgpm0AI04GCxBo7tDRKHmeuXfhdJWurneEwgcLs6Y/3xaqOp3PpzoFAWJzJ58Zl9863Ibh4GNa27SgB3T/Bb3TZfSxWfOf+DfRXqvUi+8Tei/w2rj1bYXuDWCiHUgw+1rLaVK9zXbn2++JXU406yrLOasNj6r2SQRbptdyRkfndKiKGGB/5tQDfqpqBXsRtAqis3A0djIgIdlFHGIV6btj++VhYg5qYk1J2U8dF2Xh6kA8wcNW9HEam141aRVuvfJtAgMBAAECggEBAOj6EPfg8SnRtmOcJzjs2h6CQBfXXOvcsYPYpu+9AnOynwbT+m4QEencMq2kAqNuFAxW43f44NRLz276e8Q4bUSLzubXlhxpKnqW7/2h4EyhOO5QiPe/DpntQBy6PakfMHDSGd8DqLXDCH0dM1o49aP2UPzNycCz5tp87llBLpIVoA3Cfk1cqf/7AGr3hQ+FeXLZA9mZd1tvAH2bdIEeVAUjbk4DALyIWROy/6jE8SyHzP4QNm6m5Q27yFuUIbuVg3MTI65uF9nuNDQdeupzyvbYFg9mdV5d1+MxXnIqK5MhPLxFjkyk1cmhEmYYSCFkRukcqaSin6c10HIB5AzFa4ECgYEA+dG9BiJJng4g1an1q3V3Uyiev+fLZokY8sBgv3oJIqdY763u6/bHFPvShFwne6tRbVLyoY/Pp8CNeEwmmuMF8oVfcuOX+ZRsHuoeDicf4/mmOwlYX3E6EHS/ayu9S3Ths8EshK0NJL4IufBKuGxvWrIswU8q0Le8kizB3nNQOJUCgYEA9GXhf35wHFfhDEkbDfU0rtfeFmCskER5u1vwQOD4Pq9ZxjWQdcxWK75Lazii0pRlF46zy64cQYowZWfQMQJbK0JrtZLlV1KgBzYxOvK9x8R4h9EQBCcH8P09druPyo51D97N7ZqD1ovBXxE2orQdZ5dU79rbSKmL3ULZgsWVZHkCgYAY+bcEHfluK8tskQlWku/TCISWev4CykIMQt9pRTIUnNZvX9w7CvjsSCDLysrHumDxpRFMxavlAYMjO7nAUmIN1Pet7MMM2KHWlWFb2N1/VT4hONX09MTxUDqy5DSQjqbh6bYhrYta2QTWUgemWHDpiFahHOES7MuVcZQQQUcL4QKBgCfNI8EwpS9ofGUUzswiH9dNnoSEb/X6wNxrZ6AZQzRqODOYa5NTmMD896lZiuLCeggxHETScRWXXLRXCMfCe3h7E7F5X9ItyZQDFldkStXqwDpWKMaUWK29gDIC77LsKlJQVbcZT9kz32UNF5m9vYAuXA3H1ahqvDVneqbaaK75AoGAaj86dZ9rT493pS1eXpJAhfbp4i51jLzm/ui1c324UvdX3ws1eL50D2T1m7AAz/zCy6QAcLR1b1MQGxqqrNYD12UKY9+xVKMtd4x0mueofK3v3AdBZeRRqGgE7yxrpFFicC0ixeQp09ppMpew1CGH3of/ifbon4Kn2cWdBEjxCdo=
+        ignorePatterns:
+            - /chmm/user/update-password
+            - /swagger-ui/**
+            - /api-docs/**
+            - /swagger-resources/**
+            - /v3/api-docs/**
+            - /chmm/board/image/download/**
+            - /chmm/security/jwt/rsa-password
+            - /chmm/user/check-verify-code
+            - /chmm/user/send-verify-code
+            - /chmm/user/change-password
+            - /chmm/user/email-check
+            - /chmm/user/user-check-id
+            - /chmm/user/register
+            - /chmm/user/user-check-mobile
+            - /chmm/security/pre-login
+        2fa:
+            prelogin:
+                check: false
+        cacheable: false
+    jwt:
+        secret: 0PtD9jRs2Q7Cgw38E8CNSBfxSf/ib/mAElN05fhAUU0FXsB3S8F3rfaaCSHy+NWQZkhDbs1SJm+cjdKQX4eHGA==
+        access-expired-time: 1800000 #30분
+        refresh-expired-time: 86400000 #24시간
+    ## JWT CORS
+    cors:
+        configurations:
+            - pattern: "/**"
+              allowed-origins:
+                  - "http://10.131.7.139:8080"
+                  - "http://10.131.156.253:3000"
+                  - "http://localhost:8080"
+                  - "http://localhost:23636"
+              allowed-methods:
+                  - "GET"
+                  - "POST"
+              allowed-headers:
+                  - "Authorization"
+                  - "Content-Type"
+              exposed-headers:
+                  - "Content-Disposition"
+              allow-credentials: false
+              max-age: 3600
+    #Hikari DataSource
+    jdbc:
+        driverClassName: org.h2.Driver
+        jdbcUrl: jdbc:h2:mem:chamomile_test_db;MODE=MySQL;DB_CLOSE_DELAY=-1
+        username: sa
+        password:
+        maximumPoolSize: 10
+        connectionTimeout: 30000
+        maxLifetime: 1800000
+
+    ##MAPPER
+    mapper:
+        interval: 60000
+        refreshable: true
+        config-location: classpath:/sql/config/sqlMapConfig.xml
+        refreshable-mapper-locations:
+            - classpath:/sql/service/*.xml
+            - classpath*:/sql/service/mobile/*.xml
+        mapper-locations: sql/service/*.xml
+    txPointcut:
+        expression: (execution(* net.lotte.chamomile.admin..*ServiceImpl.*(..)))
+
+    history:
+        table-whitelist: CHMM_USER_INFO,CHMM_USER_ROLE_MAP
+        database-dialect: mysql
+        query-max-row: 1000
+        table-suffix: _history
+
+    #FILE
+    file:
+        repositoryPath: /opt/files/common
+        allowExtension: ""
+        maxSize: 20MB
+        directoryDateNameFormat: yyyy/MM
+
+    #MOBILE
+    mobile:
+        admin:
+            controller: false
+            file: /opt/files/mobile
+
+    cache:
+        instance: hazelcast #none/redis/hazelcast
+
+        #redis cluster value
+        mode: cluster
+        redis-nodes:
+            - 10.131.4.85:3002
+            - 10.131.4.85:3001
+            - 10.131.4.85:3000
+        redis-max-redirects: 6
+        host: 10.131.4.85
+
+    email:
+        smtp:
+            address: 10.131.3.245
+
+springdoc:
+    swagger-ui:
+        version: v1.0.0
+        path: /swagger-ui.html
+        groups-order: DESC
+        operationsSorter: method
+        disable-swagger-default-url: true
+        display-request-duration: true
+    api-docs:
+        path: /api-docs
+        groups:
+            enabled: true
+    show-actuator: true
+    default-consumes-media-type: application/json
+    default-produces-media-type: application/json
+    packages-to-scan: net.lotte.chamomile.admin,net.lotte.chamomile.module.mobile
+jasypt:
+    encryptor:
+        password: ldcc!2626
+

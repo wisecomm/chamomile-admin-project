@@ -1,0 +1,251 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.menuauth.domain.MenuAuthMapper">
+
+    <!-- 메뉴권한 상세 List 조회(Left) -->
+    <select id="findMenuAuthLeft" resultType="net.lotte.chamomile.admin.menuauth.domain.MenuAuthVO">
+        /* 현재 미부여 권한 조회 */
+        SELECT A.ROLE_ID AS val
+            , A.ROLE_ID AS text
+        FROM CHMM_ROLE_INFO A
+        LEFT JOIN CHMM_ROLE_MENU_MAP B
+            ON A.ROLE_ID = B.ROLE_ID
+            AND B.MENU_ID = #{searchMenuId}
+        WHERE B.ROLE_ID IS NULL
+        ORDER BY A.ROLE_ID
+    </select>
+
+    <select id="findMenuAuthRole" resultType="net.lotte.chamomile.admin.menuauth.domain.MenuAuthVO">
+        /* 현재 메뉴 권한 조회 */
+        SELECT A.ROLE_ID AS roleId
+        FROM CHMM_ROLE_INFO A
+        INNER JOIN CHMM_ROLE_MENU_MAP B
+            ON A.ROLE_ID = B.ROLE_ID
+        WHERE B.MENU_ID = #{searchMenuId}
+        ORDER BY A.ROLE_ID
+    </select>
+
+    <select id="findMenuListByAuth" resultType="net.lotte.chamomile.admin.auth.domain.AuthVO">
+        SELECT
+            ROLE_ID roleId                      /* 롤 id */
+            , ROLE_NAME roleName                /* 롤 명 */
+            , ROLE_DESC roleDesc                /* 롤 설명 */
+            , ROLE_START_DT roleStartDt         /* 롤시작일시 */
+            , ROLE_END_DT roleEndDt             /* 롤종료일시 */
+            , USE_YN useYn                      /* 사용여부 */
+            , SYS_INSERT_DTM sysInsertDtm       /* 시스템 입력일시 */
+            , SYS_INSERT_USER_ID sysInsertUserId /* 시스템 입력 사용자 id */
+            , SYS_UPDATE_DTM sysUpdateDtm        /* 시스템 수정일시 */
+            , SYS_UPDATE_USER_ID sysUpdateUserId /* 시스템 수정 사용자 id */
+        FROM CHMM_ROLE_INFO
+        <where>
+            <if test="searchRole != null and searchRole != ''"> AND (ROLE_NAME LIKE CONCAT(CONCAT('%', #{searchRole}), '%') OR ROLE_ID LIKE CONCAT(CONCAT('%', #{searchRole}), '%'))</if>
+            <if test="searchRoleStartDt != null and searchRoleStartDt != ''"> AND ROLE_START_DT <![CDATA[>=]]> #{searchRoleStartDt} </if>
+            <if test="searchRoleEndDt != null and searchRoleEndDt != ''"> AND ROLE_END_DT <![CDATA[<=]]> #{searchRoleEndDt}  </if>
+            <if test="searchUseYn != null and searchUseYn != ''"> AND USE_YN = #{searchUseYn}  </if>
+            AND ROLE_ID != 'root'
+        </where>
+    </select>
+
+    <!-- 권한메뉴 상세 List 조회(Left) -->
+    <select id="findAuthMenuLeft" resultType="net.lotte.chamomile.admin.menuauth.domain.MenuAuthVO">
+        /* 현재 미부여 권한 조회 */
+        SELECT A.MENU_ID AS val
+            , A.MENU_NAME AS text
+        FROM CHMM_MENU_INFO A
+        LEFT JOIN CHMM_ROLE_MENU_MAP B
+               ON A.MENU_ID = B.MENU_ID
+              AND B.ROLE_ID = #{searchRoleId}
+        WHERE A.MENU_ID != 'root'
+		  AND B.MENU_ID IS NULL
+        ORDER BY A.MENU_ID
+    </select>
+
+    <select id="findAuthMenuRight" resultType="net.lotte.chamomile.admin.menuauth.domain.MenuAuthVO">
+        /* 부여된 권한 조회 (상위포함) */
+        SELECT MENU_ID AS val
+             , MENU_NAME AS text
+             , FIXED AS fixed
+        FROM (
+                SELECT F.MENU_ID, F.MENU_NAME, '' AS FIXED
+                FROM CHMM_ROLE_MENU_MAP M
+                LEFT JOIN CHMM_MENU_INFO F
+                    ON F.MENU_ID = M.MENU_ID
+                WHERE  M.ROLE_ID = #{searchRoleId}
+            ) RE
+        WHERE MENU_ID IS NOT NULL
+        GROUP BY MENU_ID, MENU_NAME, FIXED
+        ORDER BY MENU_ID
+    </select>
+
+    <!-- 메뉴 권한 엑셀 다운로드 조회(메뉴 기준) -->
+    <select id="findMenuAuthExcelList" resultType="net.lotte.chamomile.admin.menuauth.domain.MenuAuthVO">
+        SELECT A.MENU_ID AS menuId
+        , A.ROLE_ID AS roleId
+        FROM CHMM_ROLE_MENU_MAP A
+        INNER JOIN CHMM_MENU_INFO B ON A.MENU_ID = B.MENU_ID
+        <where>
+            <if test=" searchMenuType == 0 and searchMenu != null and searchMenu != ''">
+                AND B.MENU_NAME LIKE CONCAT(CONCAT('%', #{searchMenu}),'%')
+            </if>
+            <if test=" searchMenuType == 1 and searchMenu != null and searchMenu != ''">
+                AND B.MENU_URI LIKE CONCAT(CONCAT('%', #{searchMenu}), '%')
+            </if>
+            <if test="searchUseYn != null and searchUseYn != ''">
+                AND B.USE_YN = #{searchUseYn}
+            </if>
+        </where>
+        ORDER BY A.MENU_ID
+    </select>
+
+    <!-- 메뉴 권한 엑셀 다운로드 조회(권한 기준) -->
+    <select id="findAuthMenuExcelList" resultType="net.lotte.chamomile.admin.menuauth.domain.MenuAuthVO">
+        SELECT A.MENU_ID AS menuId
+            , A.ROLE_ID AS roleId
+        FROM CHMM_ROLE_MENU_MAP A
+        INNER JOIN CHMM_ROLE_INFO B ON A.ROLE_ID = B.ROLE_ID
+        <where>
+            <if test="searchRoleName != null and searchRoleName != ''"> AND B.ROLE_NAME LIKE CONCAT(CONCAT('%', #{searchRoleName}), '%') </if>
+            <if test="searchRoleStartDt != null and searchRoleStartDt != ''"> AND B.ROLE_START_DT <![CDATA[>=]]> #{searchRoleStartDt} </if>
+            <if test="searchRoleEndDt != null and searchRoleEndDt != ''"> AND B.ROLE_END_DT <![CDATA[<=]]> #{searchRoleEndDt}  </if>
+            <if test="searchUseYn != null and searchUseYn != ''"> AND B.USE_YN = #{searchUseYn}  </if>
+        </where>
+        ORDER BY MENU_ID
+    </select>
+
+    <delete id="deleteMenuAuth">
+        DELETE
+        FROM CHMM_ROLE_MENU_MAP
+        WHERE MENU_ID = #{menuId}
+    </delete>
+
+    <!-- 메뉴권한 저장 -->
+    <insert id="insertMenuAuth">
+        /* 그룹권한 다건 INSERT */
+        INSERT INTO CHMM_ROLE_MENU_MAP (
+            MENU_ID
+            , ROLE_ID
+            , USE_YN
+            , SYS_INSERT_DTM
+        ) VALUES (
+            #{menuId}
+            , #{roleId}
+            , '1'
+            , #{sysInsertDtm}
+        )
+    </insert>
+
+    <!-- 권한메뉴 삭제 -->
+    <delete id="deleteAuthMenu">
+        DELETE
+        FROM CHMM_ROLE_MENU_MAP
+        WHERE ROLE_ID = #{roleId}
+    </delete>
+
+    <select id="findUsedRoleList" resultType="net.lotte.chamomile.admin.authtree.AuthTreeVO">
+        SELECT
+            A.ROLE_ID   as roleId     /* 롤아이디 */
+            , B.ROLE_NAME as roleName /* 롤명 */
+        FROM
+            CHMM_ROLE_MENU_MAP A
+        LEFT JOIN
+            CHMM_ROLE_INFO B ON A.ROLE_ID = B.ROLE_ID
+        LEFT OUTER JOIN
+            CHMM_MENU_INFO C ON A.MENU_ID = C.MENU_ID
+        <where>
+            A.MENU_ID = #{searchMenuId}
+        </where>
+        ORDER BY B.ROLE_NAME
+    </select>
+
+  <select id="findUnusedRoleList" resultType="net.lotte.chamomile.admin.authtree.AuthTreeVO">
+        SELECT
+            A.ROLE_ID   as roleId       /* 롤아이디 */
+            , A.ROLE_NAME as roleName   /* 롤명 */
+        FROM
+            CHMM_ROLE_INFO A
+        <where>
+          NOT EXISTS (
+          SELECT 1 FROM CHMM_ROLE_MENU_MAP B
+          WHERE A.ROLE_ID = B.ROLE_ID
+          AND B.MENU_ID = #{searchMenuId}
+          )
+        </where>
+        ORDER BY ROLE_NAME
+  </select>
+
+  <select id="findAllHierarchyMenu" resultType="net.lotte.chamomile.admin.menutree.MenuHierarchyVO">
+    SELECT
+        A.upper_menu_id    parentMenuId
+        , B.menu_NAME         parentMenuName
+        , A.menu_ID     childMenuId
+        , C.menu_NAME         childMenuName
+    FROM
+        CHMM_MENU_INFO A
+    LEFT JOIN CHMM_MENU_INFO B
+    ON A.upper_menu_id = B.menu_ID
+    LEFT JOIN CHMM_MENU_INFO C
+    ON A.menu_ID = C.menu_ID
+  </select>
+
+  <select id="findUnusedMenuList" resultType="net.lotte.chamomile.admin.menutree.MenuTreeVO">
+    SELECT A.MENU_ID AS menuId
+         , A.MENU_NAME AS menuName
+    FROM CHMM_MENU_INFO A
+    LEFT JOIN CHMM_ROLE_MENU_MAP B
+        ON A.MENU_ID = B.MENU_ID
+        AND B.ROLE_ID = #{searchRoleId}
+    WHERE A.MENU_ID != 'root'
+		  AND B.MENU_ID IS NULL
+    ORDER BY A.MENU_ID
+  </select>
+
+  <select id="findUsedMenuList" resultType="net.lotte.chamomile.admin.menutree.MenuTreeVO">
+    SELECT MENU_ID AS menuId
+         , MENU_NAME AS menuName
+    FROM (
+           SELECT F.MENU_ID, F.MENU_NAME, '' AS FIXED
+           FROM CHMM_ROLE_MENU_MAP M
+                  LEFT JOIN CHMM_MENU_INFO F
+                            ON F.MENU_ID = M.MENU_ID
+           WHERE  M.ROLE_ID = #{searchRoleId}
+         ) RE
+    WHERE MENU_ID IS NOT NULL
+    GROUP BY MENU_ID, MENU_NAME, FIXED
+    ORDER BY MENU_ID
+  </select>
+
+  <select id="findMenuComponentsByRole" parameterType="net.lotte.chamomile.admin.menuauth.api.dto.MenuAuthQuery" resultType="net.lotte.chamomile.admin.menuauth.domain.MenuComponentRoleVO">
+    SELECT A.COMPONENT_ID   componentId
+         , A.COMPONENT_DESC componentDesc
+         , A.COMPONENT_URL  componentUrl
+         , (
+          SELECT COUNT(*)
+          FROM chmm_menu_component_role_map B
+          WHERE B.MENU_ID = #{searchMenuId} AND B.COMPONENT_ID = A.COMPONENT_ID AND ROLE_ID = #{searchRoleId}
+      ) AS hasRole
+    FROM chmm_menu_component_info A
+    WHERE A.MENU_ID = #{searchMenuId}
+    ORDER BY A.COMPONENT_ID
+  </select>
+
+  <delete id="deleteMenuComponentRole">
+    DELETE FROM chmm_menu_component_role_map
+    WHERE MENU_ID = #{menuId} AND ROLE_ID = #{roleId}
+  </delete>
+
+  <insert id="insertMenuComponentRoleMap">
+    INSERT INTO chmm_menu_component_role_map (
+        MENU_ID
+      , COMPONENT_ID
+      , ROLE_ID
+      , USE_YN
+      , SYS_INSERT_DTM
+    ) VALUES (
+        #{menuId}
+      , #{componentId}
+      , #{roleId}
+      , '1'
+      , #{sysInsertDtm}
+    )
+  </insert>
+</mapper>

@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>net.lotte.chamomile.boot</groupId>
+    <artifactId>chamomile-boot-starter-parent</artifactId>
+    <version>3.0.4.0</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>net.lotte.chamomile.admin</groupId>
+  <artifactId>chamomile-admin-project</artifactId>
+
+  <properties>
+    <argLine/> <!-- 혹시라도 jacoco plugin 이 동작하지 않을 때 빈 값이 필요하므로 추가함. -->
+    <main.basedir>${basedir}/..</main.basedir>
+  </properties>
+
+   <repositories>
+    <repository>
+      <id>lotte-nexus</id>
+      <name>Lotte Nexus Repository</name>
+      <url>https://chamomile.lotteinnovate.com/nexus/repository/maven-public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!--Spring Dependency-->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.tomcat.embed</groupId>
+          <artifactId>tomcat-embed-websocket</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-ui</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!--Chamomile Dependency-->
+    <dependency>
+      <groupId>net.lotte.chamomile</groupId>
+      <artifactId>chamomile-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.boot</groupId>
+      <artifactId>chamomile-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-security-jwt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-database</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-database-history</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-database-audit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-i18n</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-commoncode</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-menu</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-notification</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-file</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-file-excel</artifactId>
+    </dependency>
+    <!-- cache -->
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-cache</artifactId>
+    </dependency>
+    <dependency>
+      <!-- 로깅 프레임워크 바인더 (프로바이더) -->
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+
+    <!-- Jasypt properties 암호화 -->
+    <dependency>
+      <groupId>com.github.ulisesbocchio</groupId>
+      <artifactId>jasypt-spring-boot-starter</artifactId>
+    </dependency>
+    <!-- NOTE: JDBC Driver -->
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>com.microsoft.sqlserver</groupId>-->
+    <!--      <artifactId>mssql-jdbc</artifactId>-->
+    <!--      <scope>runtime</scope>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>com.oracle.database.jdbc</groupId>-->
+    <!--      <artifactId>ojdbc8</artifactId>-->
+    <!--    </dependency>-->
+
+    <!--Test Dependency-->
+    <dependency>
+      <groupId>net.lotte.chamomile</groupId>
+      <artifactId>chamomile-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-user</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!--ETC Dependency-->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.lotte.chamomile.module</groupId>
+      <artifactId>chamomile-masking</artifactId>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <!-- NOTE: fat-jar 는 넥서스로 배포 하지 않는다. (용량도 크다) -->
+        <!-- distributionManagement 도 설정되어 있지 않다. -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>@{argLine} -Dfile.encoding=${project.build.sourceEncoding}</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- NOTE: 코드 커버리지 report -> target/site/jacoco -->
+        <!-- test phase 에서 report 를 생성한다. -->
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>jacoco-prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>jacoco-report</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>verify</id>
+      <properties>
+        <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
+        <maven-pmd-plugin.version>3.21.2</maven-pmd-plugin.version>
+        <puppycrawl-tools-checkstyle.version>9.3</puppycrawl-tools-checkstyle.version>
+        <spotbugs-fb-contrib.version>7.6.0</spotbugs-fb-contrib.version>
+        <spotbugs-findsecbugs-plugin.version>1.10.1</spotbugs-findsecbugs-plugin.version>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <configuration>
+              <htmlOutput>true</htmlOutput>
+              <xmlOutput>true</xmlOutput>
+              <xmlOutputDirectory>${project.reporting.outputDirectory}/spotbugs</xmlOutputDirectory>
+              <!-- Optional directory to put spotbugs xdoc xml report -->
+              <failOnError>false</failOnError>
+              <effort>Max</effort>
+              <threshold>Low</threshold>
+              <maxRank>20</maxRank>
+              <maxAllowedViolations>100000</maxAllowedViolations>
+              <plugins>
+                <plugin>
+                  <groupId>com.h3xstream.findsecbugs</groupId>
+                  <artifactId>findsecbugs-plugin</artifactId>
+                  <version>${spotbugs-findsecbugs-plugin.version}</version>
+                </plugin>
+                <plugin>
+                  <groupId>com.mebigfatguy.fb-contrib</groupId>
+                  <artifactId>fb-contrib</artifactId>
+                  <version>${spotbugs-fb-contrib.version}</version>
+                </plugin>
+              </plugins>
+            </configuration>
+            <executions>
+              <execution>
+                <id>SpotBugs</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <version>${maven-pmd-plugin.version}</version>
+            <configuration>
+              <rulesets>
+                <ruleset>${main.basedir}/src/pmd/pmd-chamomile.xml</ruleset>
+              </rulesets>
+              <outputDirectory>${project.reporting.outputDirectory}/pmd</outputDirectory>
+              <printFailingErrors>true</printFailingErrors>
+              <failOnViolation>false</failOnViolation>
+              <maxAllowedViolations>100000</maxAllowedViolations>
+            </configuration>
+            <executions>
+              <execution>
+                <id>pmd-check</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${maven-checkstyle-plugin.version}</version>
+            <dependencies>
+              <dependency>
+                <groupId>com.puppycrawl.tools</groupId>
+                <artifactId>checkstyle</artifactId>
+                <version>${puppycrawl-tools-checkstyle.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <configLocation>${main.basedir}/src/checkstyle/checks_chamomile.xml</configLocation>
+              <logViolationCountToConsole>true</logViolationCountToConsole>
+              <logViolationsToConsole>false</logViolationsToConsole>
+              <consoleOutput>false</consoleOutput>
+              <violationSeverity>info</violationSeverity>
+              <failOnViolation>false</failOnViolation>
+              <maxAllowedViolations>100000</maxAllowedViolations>
+            </configuration>
+            <executions>
+              <execution>
+                <id>checkstyle-validate</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>mobile-admin</id>
+      <dependencies>
+        <!-- 모바일 어드민 -->
+        <dependency>
+          <groupId>net.lotte.chamomile.module</groupId>
+          <artifactId>chamomile-mobile-admin</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
+</project>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+  <Properties>
+    <Property name="LOG_FILE_APP_NAME">chamomile-admin</Property>
+    <Property name="LOG_FILE_PATH">log/${LOG_FILE_APP_NAME}</Property>
+    <!--<Property name="LOG_DATE_PATTERN">%d{ISO8601}{GMT+9}</Property>-->
+    <!--<Property name="LOG_DATE_PATTERN">%d{yyyy-MM-dd'T'HH:mm:ss.SSS}</Property>-->
+    <Property name="LOG_DATE_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS}</Property>
+    <Property name="LOG_LEVEL_PATTERN">#%5p</Property>
+    <!--<Property name="LOG_LEVEL_PATTERN">%highlight{#%5p}{FATAL=red blink, ERROR=red bold, WARN=yellow bold, INFO=green bold, DEBUG=white bold, TRACE=blue bold}</Property>-->
+    <Property name="LOG_CHAMOMILE_PATTERN_STYLE">%style{request-%.-12X{chmm.RequestID}}{magenta} %style{session-%.-12X{chmm.SessionID}}{white} %style{%X{chmm.ClientIP}}{blue} %X{chmm.ClientID} %style{%X{chmm.RequestURL}}{yellow}</Property>
+    <Property name="LOG_CHAMOMILE_PATTERN_FULL">request-%X{chmm.RequestID} session-%X{chmm.SessionID} %X{chmm.ClientIP} %X{chmm.RequestURL}</Property>
+    <!--<Property name="MESSAGE_WITH_NO_COLOR">%replace{%m}{\u001B\[\d{1,2}(;\d{1,2})?(;\d{1,2})?m}{}</Property>-->
+    <Property name="LOG_EXCEPTION_CONVERSION_WORD">%xEx</Property>
+    <!--<Property-->
+    <!--    name="CONSOLE_LOG_PATTERN">%style{${LOG_DATE_PATTERN}}{dim} ${LOG_LEVEL_PATTERN} %style{%pid}{magenta} %style{-&#45;&#45;}{dim} %style{[%20.20t]}{dim} %style{%-40.40c{1.}}{cyan} %style{:}{dim} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}-->
+    <!--</Property>-->
+    <Property
+        name="CONSOLE_LOG_PATTERN">%style{${LOG_DATE_PATTERN}}{dim} ${LOG_LEVEL_PATTERN} %style{%pid}{magenta} %style{---}{dim} %style{[%20.20t]}{dim} %style{%-40.40c{1.}}{cyan} %style{:}{dim} ${LOG_CHAMOMILE_PATTERN_STYLE} %style{:}{dim} %m%n${LOG_EXCEPTION_CONVERSION_WORD}{30}
+    </Property>
+    <Property
+        name="FILE_LOG_PATTERN">${LOG_DATE_PATTERN} ${LOG_LEVEL_PATTERN} %pid --- [%t] %-40.40c{1.} : ${LOG_CHAMOMILE_PATTERN_FULL} : %m%n${LOG_EXCEPTION_CONVERSION_WORD}
+    </Property>
+  </Properties>
+  <Appenders>
+    <Console name="console" target="SYSTEM_OUT">
+      <PatternLayout charset="UTF-8" disableAnsi="false"
+                     pattern="${CONSOLE_LOG_PATTERN}"/>
+    </Console>
+    <RollingFile name="dailyRollingFile"
+                 fileName="./${LOG_FILE_PATH}/${LOG_FILE_APP_NAME}.log"
+                 filePattern="./${LOG_FILE_PATH}/${LOG_FILE_APP_NAME}.%d{yyyy-MM-dd}.log">
+      <PatternLayout charset="UTF-8"
+                     pattern="${FILE_LOG_PATTERN}"/>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+      </Policies>
+    </RollingFile>
+    <RollingFile name="errorRollingFile"
+                 fileName="./${LOG_FILE_PATH}/${LOG_FILE_APP_NAME}-error.log"
+                 filePattern="./${LOG_FILE_PATH}/${LOG_FILE_APP_NAME}-error.%d{yyyy-MM-dd}.log">
+      <PatternLayout charset="UTF-8"
+                     pattern="${FILE_LOG_PATTERN}"/>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+      </Policies>
+    </RollingFile>
+    <RollingFile name="sqlDailyRollingFile"
+                 fileName="./${LOG_FILE_PATH}/${LOG_FILE_APP_NAME}-sql.log"
+                 filePattern="./${LOG_FILE_PATH}/${LOG_FILE_APP_NAME}-sql.%d{yyyy-MM-dd}.log">
+      <PatternLayout charset="UTF-8"
+                     pattern="${FILE_LOG_PATTERN}"/>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+      </Policies>
+    </RollingFile>
+    <RollingFile name="sqlErrorDailyRollingFile"
+                 fileName="./${LOG_FILE_PATH}/${LOG_FILE_APP_NAME}-sql-error.log"
+                 filePattern="./${LOG_FILE_PATH}/${LOG_FILE_APP_NAME}-sql-error.%d{yyyy-MM-dd}.log">
+      <PatternLayout charset="UTF-8"
+                     pattern="${FILE_LOG_PATTERN}"/>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+      </Policies>
+    </RollingFile>
+  </Appenders>
+
+  <Loggers>
+    <!-- Root Logger -->
+    <Root level="INFO">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </Root>
+
+    <!-- Application Loggers -->
+    <logger name="net.lotte.chamomile.admin" level="DEBUG" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </logger>
+    <logger name="net.lotte.chamomile.security.util.matcher.SerializableAntPathRequestMatcher" level="INFO" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </logger>
+
+    <!-- 3rd party Loggers -->
+    <logger name="org.springframework.security" level="DEBUG" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </logger>
+    <logger name="org.springframework.core" level="INFO" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </logger>
+    <logger name="org.springframework.beans" level="INFO" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </logger>
+    <logger name="org.springframework.context" level="INFO" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </logger>
+    <logger name="org.springframework.web" level="INFO" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </logger>
+
+    <!-- sql logging -->
+    <logger name="java.sql" level="FATAL" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="sqlDailyRollingFile"/>
+    </logger>
+    <logger name="jdbc.connection" level="FATAL" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="sqlErrorDailyRollingFile"/>
+    </logger>
+    <logger name="jdbc.sqlonly" level="OFF" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="sqlDailyRollingFile"/>
+    </logger>
+    <logger name="jdbc.sqltiming" level="INFO" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="sqlErrorDailyRollingFile"/>
+    </logger>
+    <logger name="jdbc.audit" level="FATAL" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="sqlErrorDailyRollingFile"/>
+    </logger>
+    <logger name="jdbc.resultset" level="FATAL" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="sqlErrorDailyRollingFile"/>
+    </logger>
+
+    <!-- chamomile logging -->
+    <logger name="ChamomileErrorLogger" level="ERROR" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+      <AppenderRef ref="errorRollingFile"/>
+    </logger>
+    <logger name="ChamomileUserAccessLogger" level="INFO" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </logger>
+    <logger name="ChamomilePrivacyLogger" level="INFO" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </logger>
+    <logger name="ChamomileFileStateLogger" level="INFO" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </logger>
+    <logger name="ChamomileFileDownloadLogger" level="INFO" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="dailyRollingFile"/>
+    </logger>
+  </Loggers>
+</Configuration>

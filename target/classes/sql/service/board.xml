@@ -1,0 +1,197 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.board.domain.BoardMapper">
+
+    <!-- 게시글 목록 조회 -->
+    <select id="findBoardList" resultType="net.lotte.chamomile.admin.board.domain.BoardVO">
+        SELECT
+            A.BOARD_ID boardId
+            , A.BOARD_TYPE boardType
+            , A.TITLE title
+            , A.MAIL_YN mailYn
+            , A.VIEW_CNT viewCnt
+            , A.NOTICE_YN noticeYn
+            , A.PUBLIC_YN publicYn
+            , A.APPLY_START_DTM applyStartDtm
+            , A.APPLY_END_DTM applyEndDtm
+            , A.CONTENTS contents
+            , A.SYS_INSERT_DTM sysInsertDtm
+            , A.SYS_INSERT_USER_ID sysInsertUserId
+            , A.SYS_UPDATE_DTM sysUpdateDtm
+            , A.SYS_UPDATE_USER_ID sysUpdateUserId
+        FROM CHMM_BOARD_INFO A
+        <where>
+            <if test="boardType != null and boardType != ''"> AND BOARD_TYPE = #{boardType} </if>
+            <if test="searchType != null and searchType.equals('searchTitle') and searchValue != null and searchValue != ''"> AND TITLE LIKE CONCAT(CONCAT('%', #{searchValue}),'%')</if>
+            <if test="searchType != null and searchType.equals('searchContents') and searchValue != null and searchValue != ''"> AND CONTENTS LIKE CONCAT(CONCAT('%', #{searchValue}),'%')</if>
+            <if test="searchType != null and searchType.equals('searchRegisterId') and searchValue != null and searchValue != ''"> AND SYS_INSERT_USER_ID = #{searchValue} </if>
+            <if test="applyStartDtm != null and applyStartDtm != ''"> AND APPLY_START_DTM <![CDATA[>=]]> #{applyStartDtm} </if>
+            <if test="applyEndDtm != null and applyEndDtm != ''"> AND APPLY_END_DTM <![CDATA[<]]> #{applyEndDtm} </if>
+            <if test="insertStartDtm != null and insertStartDtm != ''"> AND SYS_INSERT_DTM <![CDATA[>=]]> #{insertStartDtm} </if>
+            <if test="insertEndDtm != null and insertEndDtm != ''"> AND SYS_INSERT_DTM <![CDATA[<]]> #{insertEndDtm} </if>
+        </where>
+        ORDER BY A.SYS_INSERT_DTM DESC
+    </select>
+
+    <!-- 게시글 생성 -->
+    <insert id="insertBoard">
+        INSERT INTO CHMM_BOARD_INFO (
+                  BOARD_TYPE
+                  , TITLE
+                  , MAIL_YN
+                  , CONTENTS
+                  , NOTICE_YN
+                  , PUBLIC_YN
+                  , APPLY_START_DTM
+                  , APPLY_END_DTM
+                  , SYS_INSERT_DTM
+                  , SYS_INSERT_USER_ID
+                  , SYS_UPDATE_DTM
+                  , SYS_UPDATE_USER_ID
+        ) VALUES (
+                 #{boardType}
+                 , #{title}
+                 , #{mailYn}
+                 , #{contents}
+                 , #{noticeYn}
+                 , #{publicYn}
+                 , #{applyStartDtm}
+                 , #{applyEndDtm}
+                 , #{sysInsertDtm}
+                 , #{sysInsertUserId}
+                 , #{sysUpdateDtm}
+                 , #{sysUpdateUserId} )
+    </insert>
+
+    <!-- 게시글 메일 알림 및 메일 받는 사람 매핑 -->
+    <insert id="insertBoardUserMap">
+        INSERT INTO CHMM_BOARD_USER_MAP (
+                    BOARD_ID
+                  , USER_ID
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=" , ">
+            ( #{item.boardId}
+            , #{item.userId} )
+        </foreach>
+    </insert>
+
+    <!-- 게시글 상세 조회 시 조회수 증가 -->
+    <update id="updateBoardViewCnt">
+        UPDATE CHMM_BOARD_INFO
+           SET VIEW_CNT = (SELECT VIEW_CNT + 1 FROM CHMM_BOARD_INFO WHERE BOARD_ID = #{boardId})
+        WHERE BOARD_ID = #{boardId}
+    </update>
+
+    <!-- 게시글 상세 조회 -->
+    <select id="findBoardDetail" resultType="net.lotte.chamomile.admin.board.domain.BoardVO">
+        SELECT
+            BOARD_ID boardId
+             , BOARD_TYPE boardType
+             , TITLE title
+             , MAIL_YN mailYn
+             , NOTICE_YN noticeYn
+             , PUBLIC_YN publicYn
+             , APPLY_START_DTM applyStartDtm
+             , APPLY_END_DTM applyEndDtm
+             , CONTENTS contents
+             , VIEW_CNT viewCnt
+             , SYS_INSERT_DTM sysInsertDtm
+             , SYS_INSERT_USER_ID sysInsertUserId
+             , SYS_UPDATE_DTM sysUpdateDtm
+             , SYS_UPDATE_USER_ID sysUpdateUserId
+        FROM CHMM_BOARD_INFO
+        WHERE BOARD_ID = #{boardId}
+    </select>
+
+    <!-- 게시글 메일 알림 및 메일 받는 사람 조회 -->
+    <select id="findBoardUser" resultType="String">
+        SELECT USER_ID FROM CHMM_BOARD_USER_MAP
+        WHERE BOARD_ID = #{boardId}
+    </select>
+
+    <delete id="deleteBoardUserMap">
+        DELETE FROM CHMM_BOARD_USER_MAP
+        WHERE BOARD_ID = #{boardId}
+    </delete>
+
+    <delete id="deleteBoard">
+        DELETE FROM CHMM_BOARD_INFO
+        WHERE BOARD_ID = #{boardId}
+    </delete>
+
+    <update id="updateBoard">
+        UPDATE CHMM_BOARD_INFO
+        SET BOARD_TYPE = #{boardType}
+            , TITLE = #{title}
+            , APPLY_START_DTM = #{applyStartDtm}
+            , APPLY_END_DTM = #{applyEndDtm}
+            , MAIL_YN = #{mailYn}
+            , NOTICE_YN = #{noticeYn}
+            , PUBLIC_YN = #{publicYn}
+            , CONTENTS = #{contents}
+            , SYS_UPDATE_DTM = #{sysUpdateDtm}
+            , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+        WHERE BOARD_ID = #{boardId}
+    </update>
+
+    <select id="findUserEmail" resultType="String">
+        SELECT USER_EMAIL FROM CHMM_USER_INFO
+        WHERE USER_ID IN
+        <foreach collection="list" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="findNoticeBoardList" resultType="net.lotte.chamomile.admin.board.domain.BoardVO">
+        SELECT
+            BOARD_ID boardId
+            , BOARD_TYPE boardType
+            , TITLE title
+            , SYS_INSERT_DTM sysInsertDtm
+        FROM CHMM_BOARD_INFO
+        WHERE NOTICE_YN = 'Y'
+      <if test="currentDtm != null and currentDtm != ''">
+          AND APPLY_START_DTM <![CDATA[<=]]> #{currentDtm}
+          AND APPLY_END_DTM <![CDATA[>=]]> #{currentDtm}
+      </if>
+        ORDER BY SYS_INSERT_DTM DESC
+    </select>
+
+    <insert id="insertBoardImage">
+      INSERT INTO CHMM_BOARD_IMAGE_MAP (
+          BOARD_ID
+        , IMAGE_URL
+      )
+      VALUES
+        <foreach collection="list" item="item" index="index" separator=" , ">
+          ( #{item.boardId}
+          , #{item.imageUrl} )
+        </foreach>
+  </insert>
+
+    <delete id="deleteBoardImageMap">
+      DELETE FROM CHMM_BOARD_IMAGE_MAP WHERE BOARD_ID = #{boardId}
+    </delete>
+
+  <select id="selectBoardImages" parameterType="Long" resultType="String">
+    SELECT IMAGE_URL FROM CHMM_BOARD_IMAGE_MAP WHERE BOARD_ID = #{boardId}
+  </select>
+
+  <delete id="deleteBoardImages">
+    DELETE FROM CHMM_BOARD_IMAGE_MAP WHERE
+    <foreach collection="list" item="item" index="index" open="(" separator="OR" close=")">
+       BOARD_ID = #{item.boardId}
+       AND IMAGE_URL = #{item.imageUrl}
+    </foreach>
+  </delete>
+
+  <select id="findUserList" parameterType="String" resultType="net.lotte.chamomile.admin.board.domain.BoardUserVO">
+    SELECT B.USER_ID userId
+         , B.USER_NAME userName
+         , B.USE_YN useYn
+    FROM CHMM_BOARD_USER_MAP A
+    INNER JOIN CHMM_USER_INFO B
+      ON A.USER_ID = B.USER_ID
+    WHERE A.BOARD_ID = #{boardId};
+  </select>
+
+</mapper>

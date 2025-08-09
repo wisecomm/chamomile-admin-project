@@ -1,0 +1,257 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.privacypolicy.domain.PrivacyPolicyMapper">
+
+    <!-- 개인정보 처리방침 목록 조회 -->
+    <select id="findPrivacyPolicyList" resultType="net.lotte.chamomile.admin.privacypolicy.domain.PrivacyPolicyMainVO">
+        SELECT
+            A.POLICY_ID policyId
+            , A.POLICY_VERSION policyVersion
+            , A.POLICY_NOTICE_DT policyNoticeDt
+            , A.POLICY_START_DT policyStartDt
+            , A.POST_YN postYn
+        FROM CHMM_PRIVACY_POLICY_INFO A
+        <where>
+            <if test="postYn != null and postYn != ''"> A.POST_YN = #{postYn} </if>
+            <if test="policyStartDt != null and policyStartDt != ''"> AND A.POLICY_START_DT <![CDATA[>=]]> #{policyStartDt} </if>
+        </where>
+        ORDER BY A.POLICY_VERSION DESC
+    </select>
+
+    <!-- 개인정보 처리방침 목록 조회 -->
+    <select id="findPrivacyPolicySubList" resultType="net.lotte.chamomile.admin.privacypolicy.domain.PrivacyPolicySubVO">
+      SELECT
+          A.POLICY_ID policyId
+          , A.POLICY_VERSION policyVersion
+          , B.POLICY_SUB_VERSION policySubVersion
+          , B.APPLY_YN applyYn
+      FROM CHMM_PRIVACY_POLICY_INFO A LEFT OUTER JOIN CHMM_PRIVACY_POLICY_SUB_INFO B
+        ON A.POLICY_ID = B.POLICY_ID
+      <where>
+        A.POLICY_ID = #{policyId}
+      </where>
+      ORDER BY B.SYS_INSERT_DTM DESC
+    </select>
+
+    <!-- 개인정보 처리방침 상세 조회 -->
+    <select id="findPrivacyPolicyDetail" resultType="net.lotte.chamomile.admin.privacypolicy.domain.PrivacyPolicyVO">
+      SELECT
+          A.POLICY_ID policyId
+         , A.POLICY_VERSION policyVersion
+         , A.POLICY_NOTICE_DT policyNoticeDt
+         , A.POLICY_START_DT policyStartDt
+         , A.POST_YN postYn
+         , B.POLICY_SUB_VERSION policySubVersion
+         , B.APPLY_YN applyYn
+         , B.TITLE title
+         , B.CONTENT content
+         , B.SYS_INSERT_DTM sysInsertDtm
+      FROM CHMM_PRIVACY_POLICY_INFO A LEFT OUTER JOIN CHMM_PRIVACY_POLICY_SUB_INFO B
+        ON A.POLICY_ID = B.POLICY_ID
+      WHERE A.POLICY_ID = #{policyId}
+        AND B.POLICY_SUB_VERSION = #{policySubVersion}
+    </select>
+
+    <!-- 개인정보 처리방침 생성 -->
+    <insert id="insertPrivacyPolicy">
+        INSERT INTO CHMM_PRIVACY_POLICY_INFO (
+                  POLICY_ID
+                  , POLICY_VERSION
+                  , POLICY_NOTICE_DT
+                  , POLICY_START_DT
+                  , POST_YN
+                  , SYS_INSERT_DTM
+                  , SYS_INSERT_USER_ID
+                  , SYS_UPDATE_DTM
+                  , SYS_UPDATE_USER_ID
+        ) VALUES (
+                 #{policyId}
+                 , #{policyVersion}
+                 , #{policyNoticeDt}
+                 , #{policyStartDt}
+                 , #{postYn}
+                 , #{sysInsertDtm}
+                 , #{sysInsertUserId}
+                 , #{sysUpdateDtm}
+                 , #{sysUpdateUserId} )
+    </insert>
+
+  <!-- 개인정보 처리방침 Sub 생성 -->
+  <insert id="insertPrivacyPolicySub">
+    INSERT INTO CHMM_PRIVACY_POLICY_SUB_INFO (
+                   POLICY_ID
+                 , POLICY_SUB_VERSION
+                 , TITLE
+                 , CONTENT
+                 , APPLY_YN
+                 , SYS_INSERT_DTM
+                 , SYS_INSERT_USER_ID
+                 , SYS_UPDATE_DTM
+                 , SYS_UPDATE_USER_ID
+    ) VALUES (
+                 #{policyId}
+               , #{policySubVersion}
+               , #{title}
+               , #{content}
+               , #{applyYn}
+               , #{sysInsertDtm}
+               , #{sysInsertUserId}
+               , #{sysUpdateDtm}
+               , #{sysUpdateUserId} )
+  </insert>
+
+
+  <delete id="deletePrivacyPolicy" parameterType="list">
+      DELETE FROM CHMM_PRIVACY_POLICY_INFO
+      WHERE POLICY_ID = #{policyId}
+  </delete>
+
+  <delete id="deletePrivacyPolicySub" parameterType="list">
+    DELETE FROM CHMM_PRIVACY_POLICY_SUB_INFO
+    WHERE POLICY_ID = #{policyId}
+      AND POLICY_SUB_VERSION = #{policySubVersion}
+  </delete>
+
+  <delete id="deletePrivacyPolicySubAll" parameterType="list">
+    DELETE FROM CHMM_PRIVACY_POLICY_SUB_INFO
+    WHERE POLICY_ID = #{policyId}
+  </delete>
+
+  <update id="updatePrivacyPolicy">
+    UPDATE CHMM_PRIVACY_POLICY_INFO
+    SET POLICY_NOTICE_DT = #{policyNoticeDt}
+        , POLICY_START_DT = #{policyStartDt}
+        , POST_YN = #{postYn}
+        , SYS_UPDATE_DTM = #{sysUpdateDtm}
+        , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+    WHERE POLICY_ID = #{policyId}
+  </update>
+
+  <update id="updatePrivacyPolicySub">
+    UPDATE CHMM_PRIVACY_POLICY_SUB_INFO
+    SET TITLE = #{title}
+      , CONTENT = #{content}
+      , APPLY_YN = #{applyYn}
+      , SYS_UPDATE_DTM = #{sysUpdateDtm}
+      , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+    WHERE POLICY_ID = #{policyId}
+      AND POLICY_SUB_VERSION = #{policySubVersion}
+  </update>
+
+  <!-- CHMM_PRIVACY_POLICY_INFO 등록 -->
+  <select id="findPrivacyPolicyLastId" resultType="java.lang.Long">
+    SELECT
+      MAX(A.POLICY_ID) policyId
+    FROM CHMM_PRIVACY_POLICY_INFO A
+  </select>
+
+  <!-- 최대 정책 버전 -->
+  <select id="findPrivacyPolicyLastVersion" resultType="java.lang.String">
+    SELECT
+      MAX(A.POLICY_VERSION) policyVersion
+    FROM CHMM_PRIVACY_POLICY_INFO A
+    <if test="policyVersion != null">
+    WHERE ROUND(CAST(A.POLICY_VERSION AS FLOAT), 1) = ROUND(CAST(#{policyVersion} AS FLOAT), 1)
+    </if>
+  </select>
+
+  <!-- 최대 서브 버전 -->
+  <select id="findPrivacyPolicyLastSubVersion" resultType="java.lang.Long">
+    SELECT
+      MAX(A.POLICY_SUB_VERSION) policySubVersion
+    FROM CHMM_PRIVACY_POLICY_SUB_INFO A
+    WHERE A.POLICY_ID = #{policyId}
+  </select>
+
+  <!-- 적용 (게시) -->
+  <update id="applyPrivacyPolicy">
+    UPDATE CHMM_PRIVACY_POLICY_INFO
+    SET POLICY_NOTICE_DT = #{policyNoticeDt}
+      , POLICY_START_DT = #{policyStartDt}
+      , POST_YN = '1'
+      , SYS_UPDATE_DTM = #{sysUpdateDtm}
+      , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+    WHERE POLICY_ID = #{policyId}
+  </update>
+
+  <!-- 적용 -->
+  <update id="applyPrivacyPolicySub">
+    UPDATE CHMM_PRIVACY_POLICY_SUB_INFO
+    SET APPLY_YN = '1'
+      , SYS_UPDATE_DTM = #{sysUpdateDtm}
+      , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+    WHERE POLICY_ID = #{policyId}
+      AND POLICY_SUB_VERSION = #{policySubVersion}
+  </update>
+
+  <!-- 적용 취소 -->
+  <update id="applyCancelPrivacyPolicySub">
+    UPDATE CHMM_PRIVACY_POLICY_SUB_INFO
+    SET APPLY_YN = '0'
+      , SYS_UPDATE_DTM = #{sysUpdateDtm}
+      , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+    WHERE (POLICY_ID, POLICY_SUB_VERSION) IN (
+      SELECT POLICY_ID, POLICY_SUB_VERSION
+      FROM CHMM_PRIVACY_POLICY_SUB_INFO
+      WHERE POLICY_ID = #{policyId}
+        AND APPLY_YN = '1'
+    )
+  </update>
+
+
+  <select id="findPrivacyPolicyPostYn" resultType="java.lang.Long">
+    SELECT
+        COUNT(POLICY_ID) AS cnt
+    FROM CHMM_PRIVACY_POLICY_INFO
+    WHERE POST_YN = '1'
+      AND POLICY_VERSION = #{policyVersion}
+    <if test="currentDtm != null and currentDtm != ''">
+      AND POLICY_START_DT <![CDATA[<]]> #{currentDtm}
+    </if>
+  </select>
+
+  <select id="findPrivacyPolicyLast" resultType="net.lotte.chamomile.admin.privacypolicy.domain.PrivacyPolicyPostVO">
+    SELECT
+      A.POLICY_VERSION policyVersion,
+      A.POLICY_NOTICE_DT policyNoticeDt,
+      A.POLICY_START_DT policyStartDt,
+      B.TITLE title,
+      B.CONTENT content
+    FROM CHMM_PRIVACY_POLICY_INFO A INNER JOIN CHMM_PRIVACY_POLICY_SUB_INFO B
+    ON A.POLICY_ID = B.POLICY_ID
+    <where>
+      A.POST_YN = '1'
+      AND B.APPLY_YN = '1'
+      AND A.POLICY_ID =
+      (SELECT MAX(C.POLICY_ID) FROM CHMM_PRIVACY_POLICY_INFO C WHERE C.POST_YN = '1')
+    </where>
+  </select>
+
+  <select id="findPrivacyPolicyHistory" resultType="net.lotte.chamomile.admin.privacypolicy.domain.PrivacyPolicyPostVO">
+    SELECT
+      A.POLICY_VERSION policyVersion,
+      A.POLICY_NOTICE_DT policyNoticeDt,
+      A.POLICY_START_DT policyStartDt
+    FROM CHMM_PRIVACY_POLICY_INFO A
+    <where>
+        A.POST_YN = '1'
+    </where>
+    ORDER BY A.POLICY_VERSION DESC
+  </select>
+
+  <select id="findPrivacyPolicy" resultType="net.lotte.chamomile.admin.privacypolicy.domain.PrivacyPolicyPostVO">
+    SELECT
+      A.POLICY_VERSION policyVersion,
+      A.POLICY_NOTICE_DT policyNoticeDt,
+      A.POLICY_START_DT policyStartDt,
+      B.TITLE title,
+      B.CONTENT content
+    FROM CHMM_PRIVACY_POLICY_INFO A INNER JOIN CHMM_PRIVACY_POLICY_SUB_INFO B
+    ON A.POLICY_ID = B.POLICY_ID
+    <where>
+      A.POST_YN = '1'
+      AND B.APPLY_YN = '1'
+      AND A.POLICY_VERSION = #{policyVersion}
+    </where>
+  </select>
+
+</mapper>

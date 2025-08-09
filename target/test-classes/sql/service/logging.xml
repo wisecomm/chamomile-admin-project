@@ -1,0 +1,156 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.logging.domain.LoggingMapper">
+
+
+  <select id="findErrorLoggingListData" parameterType="net.lotte.chamomile.admin.logging.api.dto.ErrorLoggingQuery" resultType="net.lotte.chamomile.admin.logging.domain.ErrorLoggingVO">
+    <![CDATA[
+		SELECT
+          ERROR_LOGGING_ID AS errorLoggingId,
+          CLIENT_ID AS clientId,
+          CLIENT_IP AS clientIp,
+          REQUEST_URL AS requestUrl,
+          REQUEST_ID AS requestId,
+          SESSION_ID AS sessionId,
+          EXCEPTION_OCCUR_LINE AS exceptionOccurLine,
+          EXCEPTION_METHOD_CAUSE AS exceptionMethodCause,
+          EXCEPTION_METHOD_INFO AS exceptionMethodInfo,
+          EXCEPTION_LOG_MSG AS exceptionLogMsg,
+          LOG_DATE AS logDate
+		FROM CHMM_ERROR_LOGGING
+ 	]]>
+    <!-- 검색조건 -->
+    <where>
+      <if test="searchClientId != null and searchClientId != ''">AND ClIENT_ID LIKE CONCAT(CONCAT('%', #{searchClientId}), '%')</if>
+      <if test="searchClientIp != null and searchClientIp != ''">AND CLIENT_IP LIKE CONCAT(CONCAT('%', #{searchClientIp}), '%')</if>
+      <if test="searchRequestUrl != null and searchRequestUrl != ''">AND REQUEST_URL LIKE CONCAT(CONCAT('%', #{searchRequestUrl}), '%')</if>
+      <if test="searchRequestId != null and searchRequestId != ''">AND REQUEST_ID LIKE CONCAT(CONCAT('%', #{searchRequestId}), '%')</if>
+      <if test="searchSessionId != null and searchSessionId != ''">AND SESSION_ID LIKE CONCAT(CONCAT('%', #{searchSessionId}), '%')</if>
+      <if test="searchExceptionMethodCause != null and searchExceptionMethodCause != ''">AND EXCEPTION_METHOD_CAUSE LIKE CONCAT(CONCAT('%', #{searchExceptionMethodCause}), '%')</if>
+      <if test="searchExceptionMethodInfo != null and searchExceptionMethodInfo != ''">AND EXCEPTION_METHOD_INFO LIKE CONCAT(CONCAT('%', #{searchExceptionMethodInfo}), '%')</if>
+      <if test="searchExceptionLogMsg != null and searchExceptionLogMsg != ''">AND EXCEPTION_LOG_MSG LIKE CONCAT(CONCAT('%', #{searchExceptionLogMsg}), '%')</if>
+      <if test="searchStartLogDate != null and searchStartLogDate != ''">AND LOG_DATE &gt;= #{searchStartLogDate}</if>
+      <if test="searchEndLogDate != null and searchEndLogDate != ''">AND LOG_DATE &lt; #{searchEndLogDate}</if>
+    </where>
+  </select>
+
+  <select id="findFileStateLoggingListData" parameterType="net.lotte.chamomile.admin.logging.api.dto.FileStateLoggingQuery" resultType="net.lotte.chamomile.admin.logging.domain.FileStateLoggingVO">
+    <![CDATA[
+    SELECT
+          FILE_STATE_LOGGING_ID AS FileStateLoggingId,
+          CLIENT_ID AS clientId,
+          CLIENT_IP AS clientIp,
+          REQUEST_URL AS requestUrl,
+          REQUEST_ID AS requestId,
+          SESSION_ID AS sessionId,
+          FILE_ACTION_TYPE AS fileActionType,
+          FILE_SIZE AS fileSize,
+          FILE_PATH AS filePath,
+          FILE_HASH AS fileHash,
+          ORIGINAL_FILE_NAME AS originalFileName,
+          UPLOADED_FILE_NAME AS uploadedFileName,
+          LOG_DATE AS logDate
+    FROM CHMM_FILE_STATE_LOGGING
+  ]]>
+    <!-- 검색조건 -->
+    <where>
+      <if test="searchClientId != null and searchClientId != ''">AND CLIENT_ID LIKE CONCAT(CONCAT('%', #{searchClientId}), '%')</if>
+      <if test="searchClientIp != null and searchClientIp != ''">AND CLIENT_IP LIKE CONCAT(CONCAT('%', #{searchClientIp}), '%')</if>
+      <if test="searchRequestUrl != null and searchRequestUrl != ''">AND REQUEST_URL LIKE CONCAT(CONCAT('%', #{searchRequestUrl}), '%')</if>
+      <if test="searchRequestId != null and searchRequestId != ''">AND REQUEST_ID LIKE CONCAT(CONCAT('%', #{searchRequestId}), '%')</if>
+      <if test="searchSessionId != null and searchSessionId != ''">AND SESSION_ID LIKE CONCAT(CONCAT('%', #{searchSessionId}), '%')</if>
+      <if test="searchFileActionType != null and searchFileActionType != ''">AND FILE_ACTION_TYPE LIKE CONCAT(CONCAT('%', #{searchFileActionType}), '%')</if>
+      <if test="searchIsPrivacyFile">AND IS_PRIVACY_FILE = #{searchIsPrivacyFile}</if>
+      <if test="searchOriginalFileName != null and searchOriginalFileName != ''">AND ORIGINAL_FILE_NAME LIKE CONCAT(CONCAT('%', #{searchOriginalFileName}), '%')</if>
+      <if test="searchFileSize != null and searchFileSize != ''">AND FILE_SIZE = #{searchFileSize}</if>
+      <if test="searchFilePath != null and searchFilePath != ''">AND FILE_PATH LIKE CONCAT(CONCAT('%', #{searchFilePath}), '%')</if>
+      <if test="searchFileHash != null and searchFileHash != ''">AND FILE_HASH LIKE CONCAT(CONCAT('%', #{searchFileHash}), '%')</if>
+      <if test="searchStartLogDate != null and searchStartLogDate != ''">AND LOG_DATE &gt;= #{searchStartLogDate}</if>
+      <if test="searchEndLogDate != null and searchEndLogDate != ''">AND LOG_DATE &lt; #{searchEndLogDate}</if>
+    </where>
+  </select>
+
+
+  <select id="findPrivacyLoggingListData" parameterType="net.lotte.chamomile.admin.logging.api.dto.PrivacyLoggingQuery" resultType="net.lotte.chamomile.admin.logging.domain.PrivacyLoggingVO">
+    SELECT A.PRIVACY_LOGGING_ID AS privacyLoggingId,
+           A.CLIENT_ID AS clientId,
+           A.CLIENT_IP AS clientIp,
+           A.REQUEST_URL AS requestUrl,
+           A.REQUEST_ID AS requestId,
+           A.SESSION_ID AS sessionId,
+           A.PRIVACY_USER_COUNT AS privacyUserCount,
+           A.PRIVACY_ACTION_TYPE AS privacyActionType,
+           A.PRIVACY_FIELD_LIST AS privacyFieldList,
+           A.PRIVACY_USER_ID_LIST AS privacyUserIdList,
+           A.LOG_DATE AS orgLogDate
+    FROM  (
+    SELECT
+          PRIVACY_LOGGING_ID,
+          CLIENT_ID,
+          CLIENT_IP,
+          REQUEST_URL,
+          REQUEST_ID,
+          SESSION_ID,
+          PRIVACY_USER_COUNT,
+          PRIVACY_ACTION_TYPE,
+          PRIVACY_FIELD_LIST,
+          PRIVACY_USER_ID_LIST,
+          LOG_DATE
+    FROM CHMM_PRIVACY_LOGGING
+    <!-- 검색조건 -->
+    <where>
+      <if test="searchClientId != null and searchClientId != ''">AND CLIENT_ID LIKE CONCAT(CONCAT('%', #{searchClientId}), '%')</if>
+      <if test="searchClientIp != null and searchClientIp != ''">AND CLIENT_IP LIKE CONCAT(CONCAT('%', #{searchClientIp}), '%')</if>
+      <if test="searchRequestUrl != null and searchRequestUrl != ''">AND REQUEST_URL LIKE CONCAT(CONCAT('%', #{searchRequestUrl}), '%')</if>
+      <if test="searchRequestId != null and searchRequestId != ''">AND REQUEST_ID LIKE CONCAT(CONCAT('%', #{searchRequestId}), '%')</if>
+      <if test="searchSessionId != null and searchSessionId != ''">AND SESSION_ID LIKE CONCAT(CONCAT('%', #{searchSessionId}), '%')</if>
+      <if test="searchPrivacyActionType != null and searchPrivacyActionType != ''">AND PRIVACY_ACTION_TYPE LIKE CONCAT(CONCAT('%', #{searchPrivacyActionType}), '%')</if>
+      <if test="searchPrivacyFieldList != null and searchPrivacyFieldList != ''">AND PRIVACY_FIELD_LIST LIKE CONCAT(CONCAT('%', #{searchPrivacyFieldList}), '%')</if>
+      <if test="searchPrivacyUserIdList != null and searchPrivacyUserIdList != ''">AND PRIVACY_USER_ID_LIST LIKE CONCAT(CONCAT('%', #{searchPrivacyUserIdList}), '%')</if>
+    </where>
+    ) A
+    <where>
+      <if test="searchStartLogDate != null and searchStartLogDate != ''">AND LOG_DATE &gt;= #{searchStartLogDate}</if>
+      <if test="searchEndLogDate != null and searchEndLogDate != ''">AND LOG_DATE &lt; #{searchEndLogDate}</if>
+    </where>
+  </select>
+
+
+  <select id="findUserAccessLoggingListData" parameterType="net.lotte.chamomile.admin.logging.api.dto.UserAccessLoggingQuery" resultType="net.lotte.chamomile.admin.logging.domain.UserAccessLoggingVO">
+    SELECT A.USER_ACCESS_LOGGING_ID AS userAccessLoggingId,
+           A.CLIENT_IP AS clientIp,
+           A.REQUEST_URL AS requestUrl,
+           A.REQUEST_ID AS requestId,
+           A.SESSION_ID AS sessionId,
+           A.LOGIN_USER_ID AS loginUserID,
+           A.USER_ACCESS_ACTION_TYPE AS userAccessActionType,
+           A.LOG_DATE AS orgLogDate
+    FROM   (
+    SELECT
+          USER_ACCESS_LOGGING_ID,
+          CLIENT_IP,
+          REQUEST_URL,
+          REQUEST_ID,
+          SESSION_ID,
+          LOGIN_USER_ID,
+          USER_ACCESS_ACTION_TYPE,
+          LOG_DATE
+    FROM CHMM_USER_ACCESS_LOGGING
+    <!-- 검색조건 -->
+    <where>
+      <if test="searchClientIp != null and searchClientIp != ''">AND CLIENT_IP LIKE CONCAT(CONCAT('%', #{searchClientIp}), '%')</if>
+      <if test="searchRequestUrl != null and searchRequestUrl != ''">AND REQUEST_URL LIKE CONCAT(CONCAT('%', #{searchRequestUrl}), '%')</if>
+      <if test="searchRequestId != null and searchRequestId != ''">AND REQUEST_ID LIKE CONCAT(CONCAT('%', #{searchRequestId}), '%')</if>
+      <if test="searchSessionId != null and searchSessionId != ''">AND SESSION_ID LIKE CONCAT(CONCAT('%', #{searchSessionId}), '%')</if>
+      <if test="searchLoginUserId != null and searchLoginUserId != ''">AND LOGIN_USER_ID LIKE CONCAT(CONCAT('%', #{searchLoginUserId}), '%')</if>
+      <if test="searchUserAccessActionType != null and searchUserAccessActionType != ''">AND USER_ACCESS_ACTION_TYPE LIKE CONCAT(CONCAT('%', #{searchUserAccessActionType}), '%')</if>
+    </where>
+    ) A
+    <where>
+      <if test="searchStartLogDate != null and searchStartLogDate != ''">AND LOG_DATE &gt;= #{searchStartLogDate}</if>
+      <if test="searchEndLogDate != null and searchEndLogDate != ''">AND LOG_DATE &lt; #{searchEndLogDate}</if>
+    </where>
+  </select>
+
+</mapper>
+
+

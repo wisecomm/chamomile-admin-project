@@ -1,0 +1,15 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.authuser.api.AuthUserHistoryMapper">
+
+	<select id="findAuthUserHistory" parameterType="String" resultType="net.lotte.chamomile.admin.authuser.domain.AuthUserVO">
+		SELECT
+		    ROLE_ID     roleId
+			 ,USER_ID     userId
+		FROM
+		    CHMM_USER_ROLE_MAP_HISTORY
+		<where>
+        USER_ID = #{userId}
+    </where>
+	</select>
+
+</mapper>

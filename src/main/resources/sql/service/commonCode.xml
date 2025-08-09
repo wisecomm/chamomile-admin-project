@@ -1,0 +1,389 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.commoncode.domain.CommonCodeMapper">
+
+
+  <!-- 공통코드 대분류 목록 조회 -->
+  <select id="findCategoryList" resultType="net.lotte.chamomile.admin.commoncode.domain.CategoryVO">
+    SELECT
+        CATEGORY_ID categoryId,             /* 카테고리 id */
+        CATEGORY_DESC categoryDesc,         /* 카테고리 설명 */
+        ORDER_NUM orderNum,                 /* 순서 */
+        USE_YN useYn,                       /* 사용여부 */
+        REAL_VALUE realValue,               /* 실제값 */
+        SYS_INSERT_DTM sysInsertDtm,        /* 시스템_입력_일시 */
+        SYS_INSERT_USER_ID sysInsertUserId, /* 시스템_입력_사용자_아이디 */
+        SYS_UPDATE_DTM sysUpdateDtm,        /* 시스템_수정_일시 */
+        SYS_UPDATE_USER_ID sysUpdateUserId  /* 시스템_수정_사용자_아이디 */
+    FROM
+        CHMM_CATEGORY_INFO A
+    <where>
+      <if test="searchCategoryId != null and searchCategoryId != ''">
+        AND CATEGORY_ID LIKE CONCAT(CONCAT('%', #{searchCategoryId}),'%')
+      </if>
+      <if test="searchCategoryDesc != null and searchCategoryDesc != ''">
+        AND CATEGORY_DESC LIKE CONCAT(CONCAT('%', #{searchCategoryDesc}), '%')
+      </if>
+      <if test="searchUseYn != null and searchUseYn != ''">
+        AND USE_YN = #{searchUseYn}
+      </if>
+    </where>
+  </select>
+
+  <!-- 공통코드 중분류 목록 조회 -->
+  <select id="findCodeList" resultType="net.lotte.chamomile.admin.commoncode.domain.CodeVO">
+    SELECT
+      CATEGORY_ID categoryId,             /* 카테고리 id */
+      CODE_ID codeId,                     /* 코드 id */
+      CODE_DESC codeDesc,                 /* 코드 설명 */
+      ORDER_NUM orderNum,                 /* 순서 */
+      USE_YN useYn,                       /* 사용여부 */
+      REAL_VALUE realValue,               /* 실제값 */
+      SYS_INSERT_DTM sysInsertDtm,        /* 시스템_입력_일시 */
+      SYS_INSERT_USER_ID sysInsertUserId, /* 시스템_입력_사용자_아이디 */
+      SYS_UPDATE_DTM sysUpdateDtm,        /* 시스템_수정_일시 */
+      SYS_UPDATE_USER_ID sysUpdateUserId  /* 시스템_수정_사용자_아이디 */
+    FROM
+        CHMM_CODE_INFO A
+    <where>
+      <if test="searchCategoryId != null and searchCategoryId != ''">
+        CATEGORY_ID = #{searchCategoryId}
+      </if>
+      <if test="searchCodeId != null and searchCodeId != ''">
+        AND CODE_ID LIKE CONCAT(CONCAT('%', #{searchCodeId}), '%')
+      </if>
+      <if test="searchCodeDesc != null and searchCodeDesc != ''">
+        AND CODE_DESC LIKE CONCAT(CONCAT('%', #{searchCodeDesc}), '%')
+      </if>
+      <if test="searchUseYn != null and searchUseYn != ''">
+        AND USE_YN = #{searchUseYn}
+      </if>
+    </where>
+  </select>
+
+  <!-- 공통코드 소분류 목록 조회 -->
+  <select id="findCodeItemList" resultType="net.lotte.chamomile.admin.commoncode.domain.CodeItemVO">
+    SELECT
+      CATEGORY_ID categoryId,             /* 카테고리 id */
+      CODE_ID codeId,                     /* 코드 id */
+      CODE_ITEM_ID codeItemId,            /* 코드 아이템 id */
+      CODE_ITEM_DESC codeItemDesc,        /* 코드 아이템 설명 */
+      ORDER_NUM orderNum,                 /* 순서 */
+      USE_YN useYn,                       /* 사용여부 */
+      REAL_VALUE realValue,               /* 실제값 */
+      SYS_INSERT_DTM sysInsertDtm,        /* 시스템_입력_일시 */
+      SYS_INSERT_USER_ID sysInsertUserId, /* 시스템_입력_사용자_아이디 */
+      SYS_UPDATE_DTM sysUpdateDtm,        /* 시스템_수정_일시 */
+      SYS_UPDATE_USER_ID sysUpdateUserId  /* 시스템_수정_사용자_아이디 */
+    FROM
+        CHMM_CODE_ITEM_INFO A
+    <where>
+      <if test="searchCategoryId != null and searchCategoryId != ''">
+          CATEGORY_ID = #{searchCategoryId}
+      </if>
+      <if test="searchCodeId != null and searchCodeId != ''">
+          AND CODE_ID = #{searchCodeId}
+      </if>
+      <if test="searchCodeItemId != null and searchCodeItemId != ''">
+        AND CODE_ITEM_ID LIKE CONCAT(CONCAT('%', #{searchCodeItemId}), '%')
+      </if>
+      <if test="searchCodeItemDesc != null and searchCodeItemDesc != ''">
+        AND CODE_ITEM_DESC LIKE CONCAT(CONCAT('%', #{searchCodeItemDesc}),'%')
+      </if>
+      <if test="searchUseYn != null and searchUseYn != ''">
+        AND USE_YN = #{searchUseYn}
+      </if>
+    </where>
+  </select>
+
+  <!-- 대분류 생성 -->
+  <insert id="insertCategory">
+    INSERT INTO CHMM_CATEGORY_INFO(
+        CATEGORY_ID
+        , CATEGORY_DESC
+        , ORDER_NUM
+        , USE_YN
+        , REAL_VALUE
+        , SYS_INSERT_DTM
+        , SYS_INSERT_USER_ID
+        , SYS_UPDATE_DTM
+        , SYS_UPDATE_USER_ID
+    ) VALUES (
+        #{categoryId}
+        , #{categoryDesc}
+        , #{orderNum}
+        , #{useYn}
+        , #{realValue}
+        , #{sysInsertDtm}
+        , #{sysInsertUserId}
+        , #{sysUpdateDtm}
+        , #{sysUpdateUserId})
+  </insert>
+
+  <!-- 중분류 생성 -->
+  <insert id="insertCode">
+    INSERT INTO CHMM_CODE_INFO(
+        CATEGORY_ID
+        , CODE_ID
+        , CODE_DESC
+        , ORDER_NUM
+        , USE_YN
+        , REAL_VALUE
+        , SYS_INSERT_DTM
+        , SYS_INSERT_USER_ID
+        , SYS_UPDATE_DTM
+        , SYS_UPDATE_USER_ID
+    ) VALUES (
+        #{categoryId}
+        , #{codeId}
+        , #{codeDesc}
+        , #{orderNum}
+        , #{useYn}
+        , #{realValue}
+        , #{sysInsertDtm}
+        , #{sysInsertUserId}
+        , #{sysUpdateDtm}
+        , #{sysUpdateUserId})
+  </insert>
+
+  <!-- 소분류 생성 -->
+  <insert id="insertCodeItem">
+    INSERT INTO CHMM_CODE_ITEM_INFO(
+        CATEGORY_ID
+        , CODE_ID
+        , CODE_ITEM_ID
+        , CODE_ITEM_DESC
+        , ORDER_NUM
+        , USE_YN
+        , REAL_VALUE
+        , SYS_INSERT_DTM
+        , SYS_INSERT_USER_ID
+        , SYS_UPDATE_DTM
+        , SYS_UPDATE_USER_ID
+    )VALUES (
+        #{categoryId}
+        , #{codeId}
+        , #{codeItemId}
+        , #{codeItemDesc}
+        , #{orderNum}
+        , #{useYn}
+        , #{realValue}
+        , #{sysInsertDtm}
+        , #{sysInsertUserId}
+        , #{sysUpdateDtm}
+        , #{sysUpdateUserId})
+  </insert>
+
+  <update id="updateCategory">
+      UPDATE CHMM_CATEGORY_INFO SET
+        CATEGORY_DESC = #{categoryDesc}
+      , REAL_VALUE = #{realValue}
+      , USE_YN = #{useYn}
+      , SYS_UPDATE_DTM = #{sysUpdateDtm}
+      , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+      <if test="orderNum != null and orderNum != -1"> , ORDER_NUM = #{orderNum}</if>
+      <where>
+          CATEGORY_ID = #{categoryId}
+      </where>
+  </update>
+
+  <update id="updateCategoryOrder">
+      UPDATE CHMM_CATEGORY_INFO
+      SET ORDER_NUM = #{orderNum}
+          , SYS_UPDATE_DTM = #{sysUpdateDtm}
+          , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+      WHERE CATEGORY_ID = #{categoryId}
+  </update>
+
+  <update id="updateCode">
+      UPDATE CHMM_CODE_INFO
+      SET CODE_DESC = #{codeDesc}
+        , REAL_VALUE = #{realValue}
+        , USE_YN = #{useYn}
+        , SYS_UPDATE_DTM = #{sysUpdateDtm}
+        , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+      <where>
+          CATEGORY_ID = #{categoryId}
+          AND CODE_ID = #{codeId}
+      </where>
+  </update>
+
+  <update id="updateCodeOrder">
+      UPDATE CHMM_CODE_INFO
+      SET ORDER_NUM = #{orderNum}
+        , SYS_UPDATE_DTM = #{sysUpdateDtm}
+        , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+      WHERE CATEGORY_ID = #{categoryId}
+        AND CODE_ID = #{codeId}
+  </update>
+
+  <update id="updateCodeItem">
+      UPDATE CHMM_CODE_ITEM_INFO
+      SET CODE_ITEM_DESC = #{codeItemDesc}
+        , REAL_VALUE = #{realValue}
+        , USE_YN = #{useYn}
+        , SYS_UPDATE_DTM = #{sysUpdateDtm}
+        , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+      <where>
+          CATEGORY_ID = #{categoryId}
+          AND CODE_ID = #{codeId}
+          AND CODE_ITEM_ID = #{codeItemId}
+      </where>
+  </update>
+
+  <update id="updateCodeItemOrder">
+      UPDATE CHMM_CODE_ITEM_INFO
+      SET ORDER_NUM = #{orderNum}
+      , SYS_UPDATE_DTM = #{sysUpdateDtm}
+      , SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+      WHERE CATEGORY_ID = #{categoryId}
+        AND CODE_ID = #{codeId}
+        AND CODE_ITEM_ID = #{codeItemId}
+  </update>
+
+  <delete id="deleteCategoryWithChild">
+    <if test="_databaseId == 'ORACLE' or _databaseId == 'TIBERO'">
+      {CALL
+        DECLARE
+        BEGIN
+            DELETE FROM CHMM_CODE_ITEM_INFO WHERE CATEGORY_ID = #{categoryId};
+            DELETE FROM CHMM_CODE_INFO WHERE CATEGORY_ID = #{categoryId};
+            DELETE FROM CHMM_CATEGORY_INFO WHERE CATEGORY_ID = #{categoryId};
+        END
+      }
+    </if>
+    <if test="_databaseId == 'MYSQL' or _databaseId == 'H2'">
+      DELETE FROM CHMM_CODE_ITEM_INFO WHERE CATEGORY_ID = #{categoryId};
+      DELETE FROM CHMM_CODE_INFO WHERE CATEGORY_ID = #{categoryId};
+      DELETE FROM CHMM_CATEGORY_INFO WHERE CATEGORY_ID = #{categoryId};
+    </if>
+    <if test="_databaseId == 'MSSQL'">
+      BEGIN
+        DELETE FROM CHMM_CODE_ITEM_INFO WHERE CATEGORY_ID = #{categoryId};
+        DELETE FROM CHMM_CODE_INFO WHERE CATEGORY_ID = #{categoryId};
+        DELETE FROM CHMM_CATEGORY_INFO WHERE CATEGORY_ID = #{categoryId};
+      END
+    </if>
+  </delete>
+
+  <delete id="deleteCodeWithChild">
+    <if test="_databaseId == 'ORACLE' or _databaseId == 'TIBERO'">
+      {CALL
+        DECLARE
+        BEGIN
+            DELETE FROM CHMM_CODE_ITEM_INFO
+            WHERE CATEGORY_ID = #{categoryId}
+            AND CODE_ID = #{codeId};
+
+            DELETE FROM CHMM_CODE_INFO
+            WHERE CATEGORY_ID = #{categoryId}
+            AND CODE_ID = #{codeId};
+        END
+      }
+    </if>
+    <if test="_databaseId == 'MYSQL' or _databaseId == 'H2'">
+      DELETE FROM CHMM_CODE_ITEM_INFO
+      WHERE CATEGORY_ID = #{categoryId}
+      AND CODE_ID = #{codeId};
+
+      DELETE FROM CHMM_CODE_INFO
+      WHERE CATEGORY_ID = #{categoryId}
+      AND CODE_ID = #{codeId};
+    </if>
+    <if test="_databaseId == 'MSSQL'">
+      BEGIN
+        DELETE FROM CHMM_CODE_ITEM_INFO
+        WHERE CATEGORY_ID = #{categoryId}
+        AND CODE_ID = #{codeId};
+
+        DELETE FROM CHMM_CODE_INFO
+        WHERE CATEGORY_ID = #{categoryId}
+        AND CODE_ID = #{codeId};
+      END
+    </if>
+  </delete>
+
+  <delete id="deleteCodeItem">
+      DELETE FROM CHMM_CODE_ITEM_INFO
+      WHERE CATEGORY_ID = #{categoryId}
+        AND CODE_ID = #{codeId}
+        AND CODE_ITEM_ID = #{codeItemId}
+  </delete>
+
+    <select id="findCategoryListByIds" resultType="String">
+        SELECT CATEGORY_ID
+        FROM CHMM_CATEGORY_INFO
+        WHERE
+        <foreach collection="list" item="item" index="index" separator=" OR ">
+            (CATEGORY_ID = #{item.categoryId})
+        </foreach>
+    </select>
+
+    <select id="findCodeListByIds" resultType="net.lotte.chamomile.admin.commoncode.domain.CodeVO">
+        SELECT CATEGORY_ID categoryId
+            , CODE_ID codeId
+        FROM CHMM_CODE_INFO
+        WHERE
+        <foreach collection="list" item="item" index="index" open="(" separator=" OR " close=")">
+            CATEGORY_ID = #{item.categoryId} AND CODE_ID = #{item.codeId}
+        </foreach>
+    </select>
+
+    <select id="findCodeItemListByIds" resultType="net.lotte.chamomile.admin.commoncode.domain.CodeItemVO">
+        SELECT CATEGORY_ID categoryId
+            , CODE_ID codeId
+            , CODE_ITEM_ID codeItemId
+        FROM CHMM_CODE_ITEM_INFO
+        WHERE
+        <foreach collection="list" item="item" index="index" open="(" separator=" OR " close=")">
+            CATEGORY_ID = #{item.categoryId} AND CODE_ID = #{item.codeId} AND CODE_ITEM_ID = #{item.codeItemId}
+        </foreach>
+    </select>
+
+
+    <select id="checkDuplicateCategory" resultType="int">
+      SELECT
+        COUNT(1)
+      FROM
+      CHMM_CATEGORY_INFO A
+      <where>
+        <if test="searchCategoryId != null and searchCategoryId != ''">
+          AND CATEGORY_ID = #{searchCategoryId}
+        </if>
+      </where>
+    </select>
+
+    <!-- 공통코드 중분류 목록 조회 -->
+    <select id="checkDuplicateCode" resultType="int">
+      SELECT
+        COUNT(1)
+      FROM
+      CHMM_CODE_INFO A
+      <where>
+        <if test="searchCategoryId != null and searchCategoryId != ''">
+          CATEGORY_ID = #{searchCategoryId}
+        </if>
+        <if test="searchCodeId != null and searchCodeId != ''">
+          AND CODE_ID = #{searchCodeId}
+        </if>
+      </where>
+    </select>
+
+    <!-- 공통코드 소분류 목록 조회 -->
+    <select id="checkDuplicateCodeItem" resultType="int">
+      SELECT
+        COUNT(1)
+      FROM
+      CHMM_CODE_ITEM_INFO A
+      <where>
+        <if test="searchCategoryId != null and searchCategoryId != ''">
+          CATEGORY_ID = #{searchCategoryId}
+        </if>
+        <if test="searchCodeId != null and searchCodeId != ''">
+          AND CODE_ID = #{searchCodeId}
+        </if>
+        <if test="searchCodeItemId != null and searchCodeItemId != ''">
+          AND CODE_ITEM_ID = #{searchCodeItemId}
+        </if>
+      </where>
+    </select>
+</mapper>

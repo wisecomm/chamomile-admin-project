@@ -1,0 +1,182 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.group.domain.GroupMapper">
+
+
+
+	<!-- 그룹 List 조회 -->
+	<select id="findGroupList" parameterType="net.lotte.chamomile.admin.group.api.dto.GroupQuery" resultType="net.lotte.chamomile.admin.group.domain.GroupVO">
+	  SELECT
+		    B.GROUP_ID              groupId, /* 그룹_아이디 */
+		    B.GROUP_NAME            groupName, /* 그룹_명 */
+		    B.GROUP_DESC            groupDesc, /* 그룹_설명 */
+		    B.USE_YN                useYn, /* 사용 여부 */
+		    B.SYS_INSERT_DTM        sysInsertDtm, /* 시스템_입력_일시 */
+		    B.SYS_INSERT_USER_ID    sysInsertUserId, /* 시스템_입력_사용자_아이디 */
+		    B.SYS_UPDATE_DTM        sysUpdateDtm, /* 시스템_수정_일시 */
+		    B.SYS_UPDATE_USER_ID    sysUpdateUserId, /* 시스템_수정_사용자_아이디 */
+        A.PARENT_GROUP_ID       parentGroupId /* 상위_그룹_아이디 */
+    FROM
+        CHMM_MULTI_USER_GROUP_INFO A
+    RIGHT JOIN
+        CHMM_GROUP_INFO B
+    ON
+        A.CHILD_GROUP_ID = B.GROUP_ID
+		<where>
+			  <if test="searchGroupId != null and searchGroupId != ''"> AND B.GROUP_ID LIKE CONCAT(CONCAT('%',#{searchGroupId}),'%')  </if>
+			  <if test="searchGroupName != null and searchGroupName != ''"> AND B.GROUP_NAME LIKE CONCAT(CONCAT('%',#{searchGroupName}),'%')  </if>
+			  <if test="searchUseYn != null and searchUseYn != ''"> AND B.USE_YN = #{searchUseYn}  </if>
+        <if test="searchParentGroupId == 'null'"> AND A.PARENT_GROUP_ID IS NULL </if>
+        <if test="searchParentGroupId != null and searchParentGroupId != '' and searchParentGroupId != 'null'"> AND A.PARENT_GROUP_ID = #{searchParentGroupId}  </if>
+	  </where>
+	</select>
+
+  <!-- 그룹 List 조회 -->
+  <select id="findGroupListExcel" parameterType="net.lotte.chamomile.admin.group.api.dto.GroupQuery" resultType="net.lotte.chamomile.admin.group.domain.GroupExcelVO">
+    SELECT
+        B.GROUP_ID              groupId, /* 그룹_아이디 */
+        B.GROUP_NAME            groupName, /* 그룹_명 */
+        B.GROUP_DESC            groupDesc, /* 그룹_설명 */
+        B.USE_YN                useYn, /* 사용 여부 */
+        B.SYS_INSERT_DTM        sysInsertDtm, /* 시스템_입력_일시 */
+        B.SYS_INSERT_USER_ID    sysInsertUserId, /* 시스템_입력_사용자_아이디 */
+        B.SYS_UPDATE_DTM        sysUpdateDtm, /* 시스템_수정_일시 */
+        B.SYS_UPDATE_USER_ID    sysUpdateUserId, /* 시스템_수정_사용자_아이디 */
+        A.PARENT_GROUP_ID       parentGroupId /* 상위_그룹_아이디 */
+    FROM
+        CHMM_MULTI_USER_GROUP_INFO A
+    RIGHT JOIN
+        CHMM_GROUP_INFO B
+    ON
+        A.CHILD_GROUP_ID = B.GROUP_ID
+    <where>
+      <if test="searchGroupId != null and searchGroupId != ''"> AND B.GROUP_ID LIKE CONCAT(CONCAT('%',#{searchGroupId}),'%')  </if>
+      <if test="searchGroupName != null and searchGroupName != ''"> AND B.GROUP_NAME LIKE CONCAT(CONCAT('%',#{searchGroupName}),'%')  </if>
+      <if test="searchUseYn != null and searchUseYn != ''"> AND B.USE_YN = #{searchUseYn}  </if>
+      <if test="searchParentGroupId == 'null'"> AND A.PARENT_GROUP_ID IS NULL </if>
+      <if test="searchParentGroupId != null and searchParentGroupId != '' and searchParentGroupId != 'null'"> AND A.PARENT_GROUP_ID = #{searchParentGroupId}  </if>
+    </where>
+  </select>
+	
+	
+	<!-- 그룹 조회 -->
+	<select id="findGroup" parameterType="String" resultType="net.lotte.chamomile.admin.group.domain.GroupVO">
+		SELECT
+		    GROUP_ID            groupId, /* 그룹_아이디 */
+		    GROUP_NAME          groupName, /* 그룹_명 */
+		    GROUP_DESC          groupDesc, /* 그룹_설명 */
+		    USE_YN              useYn, /* 사용 여부 */
+		    SYS_INSERT_DTM      sysInsertDtm, /* 시스템_입력_일시 */
+		    SYS_INSERT_USER_ID  sysInsertUserId, /* 시스템_입력_사용자_아이디 */
+		    SYS_UPDATE_DTM      sysUpdateDtm, /* 시스템_수정_일시 */
+		    SYS_UPDATE_USER_ID  sysUpdateUserId /* 시스템_수정_사용자_아이디 */
+	    FROM CHMM_GROUP_INFO
+		<where>
+			GROUP_ID = #{groupId}
+		</where>
+		ORDER BY
+		    GROUP_ID
+	</select>
+	
+	<select id="findGroupListWithId" parameterType="String" resultType="net.lotte.chamomile.admin.group.domain.GroupVO">
+		SELECT
+	        B.GROUP_ID              groupId, /* 그룹_아이디 */
+	        B.GROUP_NAME            groupName, /* 그룹_명 */
+	        B.GROUP_DESC            groupDesc, /* 그룹_설명 */
+	        B.USE_YN                useYn, /* 사용 여부 */
+	        B.SYS_INSERT_DTM        sysInsertDtm, /* 시스템_입력_일시 */
+	        B.SYS_INSERT_USER_ID    sysInsertUserId, /* 시스템_입력_사용자_아이디 */
+	        B.SYS_UPDATE_DTM        sysUpdateDtm, /* 시스템_수정_일시 */
+	        B.SYS_UPDATE_USER_ID    sysUpdateUserId, /* 시스템_수정_사용자_아이디 */
+	        A.PARENT_GROUP_ID       parentGroupId /* 상위_그룹_아이디 */
+	    FROM
+	        CHMM_MULTI_USER_GROUP_INFO A
+	    RIGHT JOIN
+	        CHMM_GROUP_INFO B
+	    ON
+	        A.CHILD_GROUP_ID = B.GROUP_ID
+	    <where>
+	      B.GROUP_ID = #{groupId}
+	    </where>
+	    ORDER BY
+		    B.GROUP_ID
+	</select>
+
+	<!-- 그룹 저장 -->
+	<insert id="insertGroup" parameterType="net.lotte.chamomile.admin.group.domain.GroupVO">
+		INSERT INTO CHMM_GROUP_INFO
+		    (GROUP_ID
+		    ,GROUP_NAME
+		    ,GROUP_DESC
+        ,SYS_INSERT_DTM
+        ,SYS_INSERT_USER_ID
+        ,SYS_UPDATE_DTM
+        ,SYS_UPDATE_USER_ID
+        ,USE_YN)
+		VALUES
+		    (#{groupId}
+		    ,#{groupName}
+		    ,#{groupDesc}
+        ,#{sysInsertDtm}
+        ,#{sysInsertUserId}
+        ,#{sysUpdateDtm}
+        ,#{sysUpdateUserId}
+        ,#{useYn})
+	</insert>
+
+  <!-- 그룹 저장 -->
+  <insert id="insertGroupExcel" parameterType="net.lotte.chamomile.admin.group.domain.GroupExcelVO">
+    INSERT INTO CHMM_GROUP_INFO
+    (GROUP_ID
+    ,GROUP_NAME
+    ,GROUP_DESC
+    ,SYS_INSERT_DTM
+    ,SYS_INSERT_USER_ID
+    ,SYS_UPDATE_DTM
+    ,SYS_UPDATE_USER_ID
+    ,USE_YN)
+    VALUES
+      (#{groupId}
+      ,#{groupName}
+      ,#{groupDesc}
+      ,#{sysInsertDtm}
+      ,#{sysInsertUserId}
+      ,#{sysUpdateDtm}
+      ,#{sysUpdateUserId}
+      ,#{useYn})
+  </insert>
+
+	<!-- 그룹 수정 -->
+	<update id="updateGroup" parameterType="net.lotte.chamomile.admin.group.domain.GroupVO">
+		UPDATE 
+			  CHMM_GROUP_INFO
+		SET
+		     GROUP_NAME = #{groupName}
+		    ,GROUP_DESC = #{groupDesc}
+		    ,USE_YN = #{useYn}
+        ,SYS_UPDATE_DTM = #{sysUpdateDtm}
+        ,SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+		<where>
+			  GROUP_ID = #{groupId}
+		</where>
+	</update>
+
+	<!-- 그룹 삭제 -->
+	<delete id="deleteGroup" parameterType="java.util.List">
+		DELETE FROM
+			  CHMM_GROUP_INFO
+		<where>
+			GROUP_ID = #{groupId}
+		</where>
+	</delete>
+
+  <!-- 그룹 정렬 목록 조회(엑셀용) -->
+	<select id="groupSortedSet" resultType="java.lang.String">
+    SELECT
+		    GROUP_ID groupId
+		FROM
+				CHMM_GROUP_INFO
+		ORDER BY
+		    GROUP_ID
+	</select>
+
+</mapper>

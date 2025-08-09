@@ -1,0 +1,138 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.grouphierarchy.domain.GroupHierarchyMapper">
+
+
+	<select id="findGroupHierarchyListData" resultType="net.lotte.chamomile.admin.grouphierarchy.domain.GroupHierarchyVO">
+    SELECT
+		    A.PARENT_GROUP_ID parentGroupId,
+		    A.CHILD_GROUP_ID  childGroupId
+		FROM
+			  CHMM_MULTI_USER_GROUP_INFO A
+		INNER JOIN
+			  CHMM_GROUP_INFO B
+		ON
+			  A.PARENT_GROUP_ID = B.GROUP_ID
+		INNER JOIN
+			  CHMM_GROUP_INFO C
+		ON
+	      A.CHILD_GROUP_ID = C.GROUP_ID
+		ORDER BY
+		    PARENT_GROUP_ID, CHILD_GROUP_ID
+	</select>
+
+  <select id="findGroupHierarchyListDataExcel" resultType="net.lotte.chamomile.admin.grouphierarchy.domain.GroupHierarchyExcelVO">
+    SELECT
+      A.PARENT_GROUP_ID parentGroupId,
+      A.CHILD_GROUP_ID  childGroupId
+    FROM
+      CHMM_MULTI_USER_GROUP_INFO A
+        INNER JOIN
+      CHMM_GROUP_INFO B
+      ON
+        A.PARENT_GROUP_ID = B.GROUP_ID
+        INNER JOIN
+      CHMM_GROUP_INFO C
+      ON
+        A.CHILD_GROUP_ID = C.GROUP_ID
+    ORDER BY
+      PARENT_GROUP_ID, CHILD_GROUP_ID
+  </select>
+	
+	<select id="findGroupHierarchyList" parameterType="String" resultType="net.lotte.chamomile.admin.grouphierarchy.domain.GroupHierarchyVO">
+	  SELECT
+		    PARENT_GROUP_ID parentGroupId,
+			  CHILD_GROUP_ID  childGroupId
+		FROM
+		    CHMM_MULTI_USER_GROUP_INFO A
+		INNER JOIN
+		    CHMM_GROUP_INFO B
+		ON
+		    A.PARENT_GROUP_ID = B.GROUP_ID
+		INNER JOIN
+		    CHMM_GROUP_INFO C
+		ON
+		    A.CHILD_GROUP_ID = C.GROUP_ID
+		<where>
+			<if test="groupId != null and groupId != ''"> AND PARENT_GROUP_ID = #{groupId} </if>
+		</where>
+		ORDER BY
+		    PARENT_GROUP_ID, CHILD_GROUP_ID
+	</select>
+
+  <select id="findGroupHierarchyListByParentAndChild" parameterType="net.lotte.chamomile.admin.grouphierarchy.domain.GroupHierarchyVO" resultType="net.lotte.chamomile.admin.grouphierarchy.domain.GroupHierarchyVO">
+    SELECT
+        PARENT_GROUP_ID parentGroupId,
+        CHILD_GROUP_ID  childGroupId
+    FROM
+        CHMM_MULTI_USER_GROUP_INFO A
+    INNER JOIN
+        CHMM_GROUP_INFO B
+    ON
+        A.PARENT_GROUP_ID = B.GROUP_ID
+      <if test="parentGroupId != null and parentGroupId != ''"> AND A.PARENT_GROUP_ID = #{parentGroupId} </if>
+    INNER JOIN
+        CHMM_GROUP_INFO C
+    ON
+        A.CHILD_GROUP_ID = C.GROUP_ID
+      <if test="childGroupId != null and childGroupId != ''"> AND A.CHILD_GROUP_ID = #{childGroupId} </if>
+    ORDER BY
+    PARENT_GROUP_ID, CHILD_GROUP_ID
+  </select>
+
+  <select id="findAllGroupHierarchyList" resultType="net.lotte.chamomile.admin.grouphierarchy.domain.GroupHierarchyVO">
+    SELECT
+        PARENT_GROUP_ID parentGroupId,
+        CHILD_GROUP_ID  childGroupId
+    FROM
+        CHMM_MULTI_USER_GROUP_INFO A
+    INNER JOIN
+        CHMM_GROUP_INFO B
+    ON
+        A.PARENT_GROUP_ID = B.GROUP_ID
+    INNER JOIN
+        CHMM_GROUP_INFO C
+    ON
+        A.CHILD_GROUP_ID = C.GROUP_ID
+    ORDER BY
+        PARENT_GROUP_ID, CHILD_GROUP_ID
+  </select>
+	
+	<insert id="insertGroupHierarchy" parameterType="net.lotte.chamomile.admin.grouphierarchy.domain.GroupHierarchyVO">
+		INSERT INTO CHMM_MULTI_USER_GROUP_INFO
+		   (PARENT_GROUP_ID
+			 ,CHILD_GROUP_ID)
+		VALUES
+		   (#{parentGroupId}
+			 ,#{childGroupId})
+	</insert>
+
+  <insert id="insertGroupHierarchyExcel" parameterType="net.lotte.chamomile.admin.grouphierarchy.domain.GroupHierarchyExcelVO">
+    INSERT INTO CHMM_MULTI_USER_GROUP_INFO
+    (PARENT_GROUP_ID
+    ,CHILD_GROUP_ID)
+    VALUES
+      (#{parentGroupId}
+      ,#{childGroupId})
+  </insert>
+	
+	<delete id="deleteGroupHierarchy"  parameterType="net.lotte.chamomile.admin.grouphierarchy.domain.GroupHierarchyVO">
+		DELETE FROM
+			  CHMM_MULTI_USER_GROUP_INFO
+		<where>
+        AND PARENT_GROUP_ID = #{parentGroupId}
+		    AND CHILD_GROUP_ID = #{childGroupId}
+		</where>
+		
+	</delete>
+
+  <delete id="deleteAllGroupHierarchy"  parameterType="java.util.List">
+    DELETE FROM
+    CHMM_MULTI_USER_GROUP_INFO
+    <where>
+      PARENT_GROUP_ID = #{parentGroupId}
+      OR CHILD_GROUP_ID = #{childGroupId}
+    </where>
+
+  </delete>
+
+</mapper>

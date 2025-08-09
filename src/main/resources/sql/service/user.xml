@@ -1,0 +1,413 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.user.domain.UserMapper">
+
+
+    <!-- 사용자 List 조회 -->
+    <select id="findUserListDataPage" parameterType="net.lotte.chamomile.admin.user.api.dto.UserQuery" resultType="net.lotte.chamomile.admin.user.domain.UserVO">
+
+        <![CDATA[
+		SELECT
+		    USER_ID userId, /* 사용자_아이디 */
+		    USER_EMAIL userEmail, /* 사용자_이메일 */
+		    USER_MOBILE userMobile, /* 사용자_모바일 */
+		    USER_NAME userName, /* 사용자_명 */
+		    USER_NICK userNick, /* 사용자_닉네임 */
+		    USER_PWD userPwd, /* 사용자_암호 */
+		    USER_MSG userMsg, /* 사용자_메시지 */
+		    USER_DESC userDesc, /* 사용자_설명 */
+		    USER_STAT_CD userStatCd, /* 사용자_상태_코드 */
+		    USER_SNSID userSnsId, /* 사용자_SNS */
+		    USE_YN useYn, /* 사용 여부 */
+		    ACCOUNT_NON_LOCK accountNonLock, /* 사용자 계정 잠김 여부 */
+		    ACCOUNT_START_DT accountStartDt, /* 사용자 시작날짜 */
+		    ACCOUNT_END_DT accountEndDt, /* 사용자 종료날짜 */
+		    PASSWORD_EXPIRE_DT passwordExpireDt, /* 패스워드 만료 날짜 */
+		    SYS_INSERT_DTM sysInsertDtm, /* 시스템_입력_일시 */
+		    SYS_INSERT_USER_ID sysInsertUserId, /* 시스템_입력_사용자_아이디 */
+		    SYS_UPDATE_DTM sysUpdateDtm, /* 시스템_수정_일시 */
+		    SYS_UPDATE_USER_ID sysUpdateUserId /* 시스템_수정_사용자_아이디 */
+    	FROM
+    		CHMM_USER_INFO A
+ 	]]>
+        <!-- 검색조건 -->
+        <where>
+            <if test="searchSelect != null and searchSelect.equals('searchUserId') and searchValue != null and searchValue != ''"> AND USER_ID LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
+            <if test="searchSelect != null and searchSelect.equals('searchUserName') and searchValue != null and searchValue != ''"> AND USER_NAME LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
+            <if test="searchSelect != null and searchSelect.equals('searchUserEmail') and searchValue != null and searchValue != ''"> AND USER_EMAIL LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
+            <if test="searchUserId != null and searchUserId != ''"> AND USER_ID LIKE CONCAT(CONCAT('%',#{searchUserId}),'%')  </if>
+            <if test="searchUserName != null and searchUserName != ''"> AND USER_NAME LIKE CONCAT(CONCAT('%',#{searchUserName}),'%')  </if>
+            <if test="searchUserMobile != null and searchUserMobile != ''"> AND USER_MOBILE LIKE CONCAT(CONCAT('%',#{searchUserMobile}),'%')  </if>
+            <if test="searchUseYn != null and searchUseYn != ''"> AND USE_YN = #{searchUseYn}  </if>
+        </where>
+    </select>
+
+  <!-- 사용자 List 조회 (with Group) -->
+  <select id="findUserListWithGroup" parameterType="net.lotte.chamomile.admin.user.api.dto.UserQuery" resultType="net.lotte.chamomile.admin.user.domain.UserVO">
+    SELECT
+        A.USER_ID userId, /* 사용자_아이디 */
+        A.USER_EMAIL userEmail, /* 사용자_이메일 */
+        A.USER_MOBILE userMobile, /* 사용자_모바일 */
+        A.USER_NAME userName, /* 사용자_명 */
+        A.USER_NICK userNick, /* 사용자_닉네임 */
+        A.USER_PWD userPwd, /* 사용자_암호 */
+        A.USER_MSG userMsg, /* 사용자_메시지 */
+        A.USER_DESC userDesc, /* 사용자_설명 */
+        A.USER_STAT_CD userStatCd, /* 사용자_상태_코드 */
+        A.USER_SNSID userSnsId, /* 사용자_SNS */
+        A.USE_YN useYn, /* 사용 여부 */
+        A.ACCOUNT_NON_LOCK accountNonLock, /* 사용자 계정 잠김 여부 */
+        A.ACCOUNT_START_DT accountStartDt, /* 사용자 시작날짜 */
+        A.ACCOUNT_END_DT accountEndDt, /* 사용자 종료날짜 */
+        A.PASSWORD_EXPIRE_DT passwordExpireDt, /* 패스워드 만료 날짜 */
+        A.SYS_INSERT_DTM sysInsertDtm, /* 시스템_입력_일시 */
+        A.SYS_INSERT_USER_ID sysInsertUserId, /* 시스템_입력_사용자_아이디 */
+        A.SYS_UPDATE_DTM sysUpdateDtm, /* 시스템_수정_일시 */
+        A.SYS_UPDATE_USER_ID sysUpdateUserId, /* 시스템_수정_사용자_아이디 */
+        <if test="mobileFlag.equals('true')">
+            A.MDM_YN as mdmYn, /* 모바일기능 사용여부 */
+        </if>
+        GROUP_CONCAT(C.GROUP_NAME) as userGroups /* 사용자 그룹 */
+    FROM
+        CHMM_USER_INFO A
+    LEFT JOIN CHMM_USER_GROUP_MAP B
+        ON A.USER_ID = B.USER_ID
+    LEFT JOIN CHMM_GROUP_INFO C
+        ON B.GROUP_ID = C.GROUP_ID
+    <where>
+      <if test="searchSelect != null and searchSelect.equals('searchUserId') and searchValue != null and searchValue != ''"> AND A.USER_ID LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
+      <if test="searchSelect != null and searchSelect.equals('searchUserName') and searchValue != null and searchValue != ''"> AND A.USER_NAME LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
+      <if test="searchSelect != null and searchSelect.equals('searchUserEmail') and searchValue != null and searchValue != ''"> AND A.USER_EMAIL LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
+      <if test="searchUserId != null and searchUserId != ''"> AND A.USER_ID LIKE CONCAT(CONCAT('%',#{searchUserId}),'%')  </if>
+      <if test="searchUserName != null and searchUserName != ''"> AND A.USER_NAME LIKE CONCAT(CONCAT('%',#{searchUserName}),'%')  </if>
+      <if test="searchUserMobile != null and searchUserMobile != ''"> AND A.USER_MOBILE LIKE CONCAT(CONCAT('%',#{searchUserMobile}),'%')  </if>
+      <if test="searchUseYn != null and searchUseYn != ''"> AND A.USE_YN = #{searchUseYn}  </if>
+      <if test="mobileFlag.equals('true')">
+        <if test="searchMdmYn != null and searchMdmYn != ''">AND A.MDM_YN = #{searchMdmYn}  </if>
+      </if>
+    </where>
+    GROUP BY A.USER_ID
+    HAVING 1=1
+        <if test="searchUserGroup != null and searchUserGroup != ''"> AND userGroups LIKE CONCAT(CONCAT('%', #{searchUserGroup}), '%') </if>
+  </select>
+
+  <!-- 사용자 List 조회 -->
+  <select id="findUserListData" parameterType="net.lotte.chamomile.admin.user.api.dto.UserQuery" resultType="net.lotte.chamomile.admin.user.domain.UserVO">
+
+    <![CDATA[
+		SELECT
+		    USER_ID userId, /* 사용자_아이디 */
+		    USER_EMAIL userEmail, /* 사용자_이메일 */
+		    USER_MOBILE userMobile, /* 사용자_모바일 */
+		    USER_NAME userName, /* 사용자_명 */
+		    USER_NICK userNick, /* 사용자_닉네임 */
+		    USER_PWD userPwd, /* 사용자_암호 */
+		    USER_MSG userMsg, /* 사용자_메시지 */
+		    USER_DESC userDesc, /* 사용자_설명 */
+		    USER_STAT_CD userStatCd, /* 사용자_상태_코드 */
+		    USER_SNSID userSnsId, /* 사용자_SNS */
+		    USE_YN useYn, /* 사용 여부 */
+		    ACCOUNT_NON_LOCK accountNonLock, /* 사용자 계정 잠김 여부 */
+		    ACCOUNT_START_DT accountStartDt, /* 사용자 시작날짜 */
+		    ACCOUNT_END_DT accountEndDt, /* 사용자 종료날짜 */
+		    PASSWORD_EXPIRE_DT passwordExpireDt, /* 패스워드 만료 날짜 */
+		    SYS_INSERT_DTM sysInsertDtm, /* 시스템_입력_일시 */
+		    SYS_INSERT_USER_ID sysInsertUserId, /* 시스템_입력_사용자_아이디 */
+		    SYS_UPDATE_DTM sysUpdateDtm, /* 시스템_수정_일시 */
+		    SYS_UPDATE_USER_ID sysUpdateUserId /* 시스템_수정_사용자_아이디 */
+    	FROM
+    		CHMM_USER_INFO A
+ 	]]>
+    <!-- 검색조건 -->
+    <where>
+      <if test="searchSelect.equals('searchUserId') and searchValue != null and searchValue != ''"> AND USER_ID LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
+      <if test="searchSelect.equals('searchUserName') and searchValue != null and searchValue != ''"> AND USER_NAME LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
+      <if test="searchSelect.equals('searchUserEmail') and searchValue != null and searchValue != ''"> AND USER_EMAIL LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
+      <if test="searchUserId != null and searchUserId != ''"> AND USER_ID LIKE CONCAT(CONCAT('%',#{searchUserId}),'%')  </if>
+      <if test="searchUserName != null and searchUserName != ''"> AND USER_NAME LIKE CONCAT(CONCAT('%',#{searchUserName}),'%')  </if>
+      <if test="searchUserMobile != null and searchUserMobile != ''"> AND USER_MOBILE LIKE CONCAT(CONCAT('%',#{searchUserMobile}),'%')  </if>
+      <if test="searchUseYn != null and searchUseYn != ''"> AND USE_YN = #{searchUseYn}  </if>
+    </where>
+  </select>
+
+    <!-- 사용자 단건 조회 -->
+    <select id="findUserDetail" parameterType="net.lotte.chamomile.admin.user.api.dto.UserQuery" resultType="net.lotte.chamomile.admin.user.domain.UserVO">
+        SELECT
+            USER_ID userId, /* 사용자_아이디 */
+            USER_EMAIL userEmail, /* 사용자_이메일 */
+            USER_MOBILE userMobile, /* 사용자_모바일 */
+            USER_NAME userName, /* 사용자_명 */
+            USER_NICK userNick, /* 사용자_닉네임 */
+            USER_PWD userPwd, /* 사용자_암호 */
+            USER_MSG userMsg, /* 사용자_메시지 */
+            USER_DESC userDesc, /* 사용자_설명 */
+            USER_STAT_CD userStatCd, /* 사용자_상태_코드 */
+            USER_SNSID userSnsId, /* 사용자_SNS */
+            USE_YN useYn, /* 사용 여부 */
+            ACCOUNT_NON_LOCK accountNonLock, /* 사용자 계정 잠김 여부 */
+            ACCOUNT_START_DT accountStartDt, /* 사용자 시작날짜 */
+            ACCOUNT_END_DT accountEndDt, /* 사용자 종료날짜 */
+            PASSWORD_EXPIRE_DT passwordExpireDt, /* 패스워드 만료 날짜 */
+            SYS_INSERT_DTM sysInsertDtm, /* 시스템_입력_일시 */
+            SYS_INSERT_USER_ID sysInsertUserId, /* 시스템_입력_사용자_아이디 */
+            SYS_UPDATE_DTM sysUpdateDtm, /* 시스템_수정_일시 */
+            SYS_UPDATE_USER_ID sysUpdateUserId /* 시스템_수정_사용자_아이디 */
+        FROM
+            CHMM_USER_INFO A
+        <!-- 검색조건 -->
+        <where>
+            <if test="userId != null and userId != ''">AND USER_ID = #{userId}</if>
+        </where>
+    </select>
+
+  <!-- 모바일 기능 - 기기관리여부, 사용자 보유 단말 수 조회 -->
+  <select id="findUserMobileDetail" parameterType="net.lotte.chamomile.admin.user.api.dto.UserQuery" resultType="net.lotte.chamomile.admin.user.domain.UserVO">
+    SELECT
+      COALESCE(COUNT(B.DEVICE_ID), 0) userDeviceCount,
+      A.MDM_YN mdmYn
+    FROM
+      CHMM_USER_INFO A
+      LEFT JOIN  CHMM_APP_DEVICE_INFO B
+        ON A.USER_ID = B.USER_ID
+    WHERE
+      A.USER_ID = #{userId}
+  </select>
+
+  <!-- 사용자 단건 조회 -->
+  <select id="findUserPwd" parameterType="net.lotte.chamomile.admin.user.domain.UserVO" resultType="String">
+    SELECT
+        USER_PWD userPwd /* 사용자_암호 */
+    FROM
+        CHMM_USER_INFO A
+    WHERE USER_ID = #{userId}
+  </select>
+
+    <!-- 유저 저장 -->
+    <insert id="insertUser" parameterType="net.lotte.chamomile.admin.user.domain.UserVO">
+        INSERT INTO CHMM_USER_INFO
+            (
+                USER_ID,
+                USER_EMAIL,
+                USER_MOBILE,
+                USER_NAME,
+                USER_NICK,
+                USER_PWD,
+                USER_MSG,
+                USER_DESC,
+                USER_STAT_CD,
+                USER_SNSID,
+                ACCOUNT_NON_LOCK,
+                PASSWORD_LOCK_CNT,
+                ACCOUNT_START_DT,
+                ACCOUNT_END_DT,
+                PASSWORD_EXPIRE_DT,
+                USE_YN,
+                SYS_INSERT_DTM,
+                SYS_INSERT_USER_ID,
+                SYS_UPDATE_DTM,
+                SYS_UPDATE_USER_ID
+             ) VALUES (
+                #{userId},
+                #{userEmail},
+                #{userMobile},
+                #{userName},
+                #{userNick},
+                #{userPwd},
+                #{userMsg},
+                #{userDesc},
+                #{userStatCd},
+                #{userSnsId},
+                '1',
+                '0',
+                #{accountStartDt},
+                #{accountEndDt},
+                #{passwordExpireDt},
+                #{useYn},
+                #{sysInsertDtm},
+                #{sysInsertUserId},
+                #{sysUpdateDtm},
+                #{sysUpdateUserId}
+             )
+    </insert>
+
+    <!-- 유저 수정 -->
+    <update id="updateUser" parameterType="net.lotte.chamomile.admin.user.domain.UserVO">
+
+        UPDATE
+            CHMM_USER_INFO
+        SET
+            USER_ID = #{userId},
+            USER_EMAIL = #{userEmail},
+            USER_MOBILE = #{userMobile},
+            USER_NAME = #{userName},
+            USER_NICK = #{userNick},
+            <if test="pwChange != 'false'">
+                USER_PWD = #{userPwd},
+            </if>
+            USER_MSG = #{userMsg},
+            USER_DESC = #{userDesc},
+            USER_STAT_CD = #{userStatCd},
+            USER_SNSID = #{userSnsId},
+            ACCOUNT_NON_LOCK = #{accountNonLock},
+            <if test='accountNonLock.equals("1")'>
+                PASSWORD_LOCK_CNT = 0,
+            </if>
+            ACCOUNT_START_DT = #{accountStartDt},
+            ACCOUNT_END_DT = #{accountEndDt},
+            PASSWORD_EXPIRE_DT = #{passwordExpireDt},
+            USE_YN = #{useYn},
+            SYS_UPDATE_DTM = #{sysUpdateDtm},
+            SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+        <where>
+            AND USER_ID = #{userId}
+        </where>
+    </update>
+
+  <!-- 모바일 사용여부 추가 -->
+  <update id="updateMdmYnOfUser" parameterType="net.lotte.chamomile.admin.user.domain.UserVO">
+    UPDATE
+        CHMM_USER_INFO
+    SET
+        MDM_YN = #{mdmYn}
+    WHERE
+      USER_ID = #{userId}
+  </update>
+
+  <!-- 유저 수정 -->
+  <update id="updatePasswordUser" parameterType="net.lotte.chamomile.admin.user.domain.UserPasswordVO">
+
+    UPDATE
+        CHMM_USER_INFO
+    SET
+      USER_ID = #{userId},
+    <if test="pwChange != 'false'">
+      USER_PWD = #{userPwd},
+    </if>
+      ACCOUNT_NON_LOCK = #{accountNonLock},
+    <if test='accountNonLock.equals("1")'>
+      PASSWORD_LOCK_CNT = 0,
+    </if>
+    <if test="accountEndDt != null and accountEndDt != ''">
+      ACCOUNT_END_DT = #{accountEndDt},
+    </if>
+    <if test="passwordExpireDt != null and passwordExpireDt != ''">
+      PASSWORD_EXPIRE_DT = #{passwordExpireDt},
+    </if>
+      SYS_UPDATE_DTM = #{sysUpdateDtm},
+      SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+    <where>
+      AND USER_ID = #{userId}
+    </where>
+  </update>
+
+    <!-- 사용자 체크 -->
+    <select id="userIdCheck" parameterType="net.lotte.chamomile.admin.user.domain.UserVO" resultType="int">
+        SELECT
+            COUNT(1)
+        FROM
+            CHMM_USER_INFO
+        <where>
+            USER_ID = #{userId}
+        </where>
+    </select>
+
+  <!-- 사용자 휴대폰번호 중복체크 -->
+  <select id="userMobileDupCheck" parameterType="net.lotte.chamomile.admin.user.domain.UserVO" resultType="int">
+    SELECT
+    COUNT(1)
+    FROM
+    CHMM_USER_INFO
+    <where>
+      USER_MOBILE = #{userMobile}
+      <if test="userId != null">
+        AND USER_ID != #{userId}
+      </if>
+    </where>
+  </select>
+
+  <!-- 사용자 이메일 중복체크 -->
+  <select id="userEmailDupCheck" parameterType="net.lotte.chamomile.admin.user.domain.UserVO" resultType="int">
+    SELECT
+    COUNT(1)
+    FROM
+    CHMM_USER_INFO
+    <where>
+      USER_EMAIL = #{userEmail}
+      <if test="userId != null">
+        AND USER_ID != #{userId}
+      </if>
+    </where>
+  </select>
+
+    <!-- 유저 삭제 -->
+    <delete id="deleteUser" parameterType="net.lotte.chamomile.admin.user.domain.UserVO">
+        DELETE FROM CHMM_USER_INFO
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 사용자 그룹 매핑 삭제 -->
+    <delete id="deleteUserGroupMap" parameterType="net.lotte.chamomile.admin.user.domain.UserVO">
+        DELETE FROM CHMM_USER_GROUP_MAP
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 사용자권한 매핑 삭제 -->
+    <delete id="deleteUserauth" parameterType="net.lotte.chamomile.admin.user.domain.UserVO">
+        DELETE FROM	CHMM_USER_ROLE_MAP
+        WHERE USER_ID = #{userId}
+    </delete>
+
+
+  <!--가장 최근에 성공한 접근 정보-->
+  <select id="findUserRecentlyLoggingInfo" parameterType="net.lotte.chamomile.admin.user.api.dto.UserQuery" resultType="net.lotte.chamomile.admin.logging.domain.UserAccessLoggingVO">
+      SELECT A.* FROM (
+          SELECT
+              ROW_NUMBER() OVER (ORDER BY LOG_DATE DESC) ROWNO,
+              USER_ACCESS_LOGGING_ID userAccessLoggingId,
+              CLIENT_IP clientIp,
+              REQUEST_URL requestUrl,
+              REQUEST_ID requestId,
+              SESSION_ID sessionId,
+              LOGIN_USER_ID loginUserID,
+              USER_ACCESS_ACTION_TYPE userAccessActionType,
+              LOG_DATE logDate
+          FROM
+              chmm_user_access_logging
+          WHERE LOGIN_USER_ID = #{searchUserId}
+          AND USER_ACCESS_ACTION_TYPE = #{searchLogType}
+      ) A
+      WHERE A.ROWNO = 1
+  </select>
+
+  <!--가장 최근에 성공한 접근 정보2-->
+  <select id="findUserRecentlyLoggingInfo2" parameterType="net.lotte.chamomile.admin.user.api.dto.UserQuery" resultType="net.lotte.chamomile.admin.logging.domain.UserAccessLoggingVO">
+      SELECT A.* FROM (
+          SELECT
+            ROW_NUMBER() OVER (ORDER BY A.LOG_DATE DESC) ROWNO,
+            A.USER_ACCESS_LOGGING_ID  userAccessLoggingId,
+            A.CLIENT_IP               clientIp,
+            A.REQUEST_URL             requestUrl,
+            A.REQUEST_ID              requestId,
+            A.SESSION_ID              sessionId,
+            A.LOGIN_USER_ID           loginUserID,
+            A.USER_ACCESS_ACTION_TYPE userAccessActionType,
+            A.LOG_DATE                orgLogDate
+          FROM chmm_user_access_logging A
+          WHERE A.LOGIN_USER_ID = #{searchUserId}
+            AND A.USER_ACCESS_ACTION_TYPE = #{searchLogType}
+            AND A.LOG_DATE <![CDATA[ < ]]>(SELECT MAX(B.LOG_DATE)
+                                FROM chmm_user_access_logging B
+                                WHERE A.LOGIN_USER_ID = B.LOGIN_USER_ID
+                                AND A.USER_ACCESS_ACTION_TYPE = B.USER_ACCESS_ACTION_TYPE)
+      ) A
+      WHERE A.ROWNO = 1
+  </select>
+
+  <update id="accountOnLock" parameterType="String">
+      UPDATE
+          chmm_user_info
+      SET
+          ACCOUNT_NON_LOCK = 1
+      WHERE USER_ID = #{searchUserId}
+  </update>
+
+</mapper>

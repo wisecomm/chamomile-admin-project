@@ -1,0 +1,49 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.webpagelog.domain.WebpageLogMapper">
+
+
+  <!-- 리소스 목록 조회 -->
+  <select id="findWebpageLogList" parameterType="net.lotte.chamomile.admin.webpagelog.api.dto.WebpageLogQuery"
+          resultType="net.lotte.chamomile.admin.webpagelog.domain.WebpageLogVO">
+
+    SELECT
+        WEBPAGE_LOG_ID          webpageLogId
+       ,URL                     url
+       ,SYS_INSERT_DTM          sysInsertDtm /* 시스템_입력_일시 */
+       ,SYS_INSERT_USER_ID      sysInsertUserId /* 시스템_입력_사용자_아이디 */
+       ,SYS_UPDATE_DTM          sysUpdateDtm /* 시스템_수정_일시 */
+       ,SYS_UPDATE_USER_ID      sysUpdateUserId /* 시스템_수정_사용자_아이디 */
+    FROM
+        CHMM_WEBPAGE_LOGGING
+    <!-- 검색조건 -->
+    <where>
+      <if test="searchStartLogDate != null and searchStartLogDate != ''">AND SYS_INSERT_DTM >= #{searchStartLogDate}</if>
+      <if test="searchEndLogDate != null and searchEndLogDate != ''">AND SYS_INSERT_DTM <![CDATA[<]]> #{searchEndLogDate}</if>
+      <if test="searchWebpageLogId != null and searchWebpageLogId != ''">AND WEBPAGE_LOG_ID = #{searchWebpageLogId}</if>
+      <if test="searchUrl != null and searchUrl != ''">AND URL LIKE CONCAT(CONCAT('%',#{searchUrl}),'%')</if>
+      <if test="searchSysInsertUserId != null and searchSysInsertUserId != ''">AND SYS_INSERT_USER_ID = #{searchSysInsertUserId}</if>
+      <if test="searchStartLogDate != null and searchStartLogDate != ''">AND SYS_INSERT_DTM &gt;= #{searchStartLogDate}</if>
+      <if test="searchEndLogDate != null and searchEndLogDate != ''">AND SYS_INSERT_DTM &lt; #{searchEndLogDate}</if>
+    </where>
+
+  </select>
+
+  <!-- 리소스 저장 -->
+  <insert id="insertWebpageLog" parameterType="net.lotte.chamomile.admin.webpagelog.domain.WebpageLogVO">
+    <![CDATA[
+    INSERT INTO CHMM_WEBPAGE_LOGGING
+        (URL
+        ,SYS_INSERT_DTM
+        ,SYS_INSERT_USER_ID
+        ,SYS_UPDATE_DTM
+        ,SYS_UPDATE_USER_ID)
+    VALUES
+        (#{url}
+        ,#{sysInsertDtm}
+        ,#{sysInsertUserId}
+        ,#{sysUpdateDtm}
+        ,#{sysUpdateUserId})
+    ]]>
+  	</insert>
+
+</mapper>

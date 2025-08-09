@@ -1,0 +1,134 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.lotte.chamomile.admin.authhierarchy.domain.AuthHierarchyMapper">
+
+	<select id="findAuthHierarchyListData" parameterType="net.lotte.chamomile.admin.authhierarchy.api.dto.AuthHierarchyQuery" resultType="net.lotte.chamomile.admin.authhierarchy.domain.AuthHierarchyVO">
+		<![CDATA[
+			SELECT
+			    A.PARENT_ROLE_ID      parentRoleId,
+			    A.CHILD_ROLE_ID       childRoleId,
+			    B.ROLE_NAME           parentRoleName,
+			    C.ROLE_NAME           childRoleName
+			FROM
+			    CHMM_MULTI_ROLE_GROUP_INFO A
+			INNER JOIN
+			    CHMM_ROLE_INFO B
+			ON
+			    A.PARENT_ROLE_ID = B.ROLE_ID
+			INNER JOIN
+			    CHMM_ROLE_INFO C
+			ON
+			    A.CHILD_ROLE_ID = C.ROLE_ID
+	 	]]>
+		<where>
+			<if test="searchParentRoleId != null and searchParentRoleId != ''"> AND PARENT_ROLE_ID LIKE CONCAT(CONCAT('%',#{searchParentRoleId}),'%')  </if>
+			<if test="searchChildRoleId != null and searchChildRoleId != ''"> AND CHILD_ROLE_ID LIKE CONCAT(CONCAT('%',#{searchChildRoleId}),'%')  </if>
+		</where>
+		ORDER BY PARENT_ROLE_ID, CHILD_ROLE_ID
+	</select>
+
+	 <insert id="insertAuthHierarchy" parameterType="net.lotte.chamomile.admin.authhierarchy.domain.AuthHierarchyVO">
+		INSERT INTO
+			CHMM_MULTI_ROLE_GROUP_INFO
+		(
+			PARENT_ROLE_ID,
+			CHILD_ROLE_ID
+		) VALUES (
+					 #{parentRoleId},
+					 #{childRoleId}
+				 )
+
+	</insert>
+
+	<delete id="deleteAuthHierarchy"  parameterType="net.lotte.chamomile.admin.authhierarchy.domain.AuthHierarchyVO">
+		DELETE FROM
+			CHMM_MULTI_ROLE_GROUP_INFO
+		WHERE PARENT_ROLE_ID = #{parentRoleId}
+		  AND CHILD_ROLE_ID = #{childRoleId}
+	</delete>
+
+  <select id="findHierarchyRoles" parameterType="net.lotte.chamomile.admin.menuauth.api.dto.MenuAuthQuery" resultType="net.lotte.chamomile.admin.authtree.RoleHierarchyVO">
+    SELECT
+      A.PARENT_ROLE_ID    parentRoleId
+         ,B.ROLE_NAME         parentRoleName
+         ,A.CHILD_ROLE_ID     childRoleId
+         ,C.ROLE_NAME         childRoleName
+         ,C.ROLE_START_DT     roleStartDt
+         ,C.ROLE_END_DT       roleEndDt
+         ,C.USE_YN            useYn
+    FROM
+      CHMM_MULTI_ROLE_GROUP_INFO A
+        LEFT JOIN
+      CHMM_ROLE_INFO B
+      ON
+        A.PARENT_ROLE_ID = B.ROLE_ID
+        LEFT JOIN
+      CHMM_ROLE_INFO C
+      ON
+        A.CHILD_ROLE_ID = C.ROLE_ID
+    WHERE 1=1
+    <if test="searchRoleStartDt != null and searchRoleStartDt != ''"> AND C.ROLE_START_DT <![CDATA[>=]]> #{searchRoleStartDt} </if>
+    <if test="searchRoleEndDt != null and searchRoleEndDt != ''"> AND C.ROLE_END_DT <![CDATA[<]]> #{searchRoleEndDt} </if>
+  </select>
+
+  <select id="findAllHierarchyRole" resultType="net.lotte.chamomile.admin.authtree.RoleHierarchyVO">
+    SELECT
+        A.PARENT_ROLE_ID    parentRoleId
+       ,B.ROLE_NAME         parentRoleName
+       ,A.CHILD_ROLE_ID     childRoleId
+       ,C.ROLE_NAME         childRoleName
+       ,C.ROLE_START_DT     roleStartDt
+       ,C.ROLE_END_DT       roleEndDt
+       ,C.USE_YN            useYn
+    FROM
+        CHMM_MULTI_ROLE_GROUP_INFO A
+    LEFT JOIN
+        CHMM_ROLE_INFO B
+    ON
+        A.PARENT_ROLE_ID = B.ROLE_ID
+    LEFT JOIN
+        CHMM_ROLE_INFO C
+    ON
+        A.CHILD_ROLE_ID = C.ROLE_ID
+  </select>
+
+  <select id="findSingleRoleList" resultType="net.lotte.chamomile.admin.authtree.RoleHierarchyVO">
+    SELECT
+        A.ROLE_ID           parentRoleId
+        ,A.ROLE_NAME        parentRoleName
+        ,A.ROLE_ID          childRoleId
+        ,A.ROLE_NAME        childRoleName
+        ,A.ROLE_START_DT    roleStartDt
+        ,A.ROLE_END_DT      roleEndDt
+        ,A.USE_YN           useYn
+		FROM CHMM_ROLE_INFO A
+  </select>
+
+  <select id="findHierarchyRoleList" parameterType="net.lotte.chamomile.admin.authhierarchy.api.dto.AuthHierarchyQuery" resultType="net.lotte.chamomile.admin.authtree.RoleHierarchyVO">
+    <![CDATA[
+    SELECT
+          A.PARENT_ROLE_ID    parentRoleId
+         ,B.ROLE_NAME         parentRoleName
+         ,A.CHILD_ROLE_ID     childRoleId
+         ,C.ROLE_NAME         childRoleName
+         ,C.ROLE_START_DT     roleStartDt
+         ,C.ROLE_END_DT       roleEndDt
+         ,C.USE_YN            useYn
+    FROM
+      CHMM_MULTI_ROLE_GROUP_INFO A
+        LEFT JOIN
+      CHMM_ROLE_INFO B
+      ON
+        A.PARENT_ROLE_ID = B.ROLE_ID
+        LEFT JOIN
+      CHMM_ROLE_INFO C
+      ON
+        A.CHILD_ROLE_ID = C.ROLE_ID
+	 	]]>
+    <where>
+      <if test="searchParentRoleId != null and searchParentRoleId != ''"> OR PARENT_ROLE_ID LIKE CONCAT(CONCAT('%',#{searchParentRoleId}),'%')  </if>
+      <if test="searchChildRoleId != null and searchChildRoleId != ''"> OR CHILD_ROLE_ID LIKE CONCAT(CONCAT('%',#{searchChildRoleId}),'%')  </if>
+    </where>
+  </select>
+
+</mapper>

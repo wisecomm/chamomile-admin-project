@@ -1,0 +1,173 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.groupuser.domain.GroupUserMapper">
+
+
+	<select id="findGroupUserList" parameterType="String" resultType="net.lotte.chamomile.admin.groupuser.domain.GroupUserVO">
+		SELECT 
+			  a.USER_ID       userId,
+			  a.USER_NAME     userName,
+			  b.GROUP_ID      groupId,
+			  c.GROUP_NAME    groupName
+		FROM 
+			  CHMM_USER_INFO a
+		LEFT JOIN
+			  CHMM_USER_GROUP_MAP b
+		ON 
+			  a.USER_ID = b.USER_ID AND
+			  b.GROUP_ID = #{groupId}
+		LEFT JOIN
+		    CHMM_GROUP_INFO c
+		ON
+		    c.GROUP_ID = b.GROUP_ID
+    WHERE
+			  b.GROUP_ID IS NOT NULL
+		ORDER BY
+			  a.USER_ID, b.GROUP_ID
+	</select>
+
+  <select id="findGroupUserListByUserId" parameterType="String" resultType="net.lotte.chamomile.admin.groupuser.domain.GroupUserVO">
+    SELECT
+      a.USER_ID       userId,
+      a.USER_NAME     userName,
+      b.GROUP_ID      groupId,
+      c.GROUP_NAME    groupName
+    FROM CHMM_USER_GROUP_MAP b
+    JOIN CHMM_USER_INFO a
+      ON a.USER_ID = b.USER_ID AND
+         b.USER_ID = #{userId}
+    LEFT JOIN CHMM_GROUP_INFO c
+      ON c.GROUP_ID = b.GROUP_ID
+   WHERE b.GROUP_ID IS NOT NULL
+   ORDER BY a.USER_ID, b.GROUP_ID
+  </select>
+
+  <select id="findGroupUserListExcel" resultType="net.lotte.chamomile.admin.groupuser.domain.GroupUserExcelVO">
+    SELECT
+        a.USER_ID               userId,
+        b.GROUP_ID              groupId,
+        b.USE_YN                useYn,
+        b.SYS_INSERT_DTM        sysInsertDtm,
+        b.SYS_INSERT_USER_ID    sysInsertUserId,
+        b.SYS_UPDATE_DTM        sysUpdateDtm,
+        b.SYS_UPDATE_USER_ID    sysUpdateUserId
+    FROM
+        CHMM_USER_INFO a
+    LEFT JOIN
+        CHMM_USER_GROUP_MAP b
+    ON
+        a.USER_ID = b.USER_ID
+    WHERE
+        b.GROUP_ID IS NOT NULL
+    ORDER BY
+        a.USER_ID, b.GROUP_ID
+  </select>
+
+	<select id="findUnMappedUserList" parameterType="String" resultType="net.lotte.chamomile.admin.groupuser.domain.GroupUserVO">
+		SELECT 
+			  a.USER_ID   userId,
+			  a.USER_NAME userName,
+			  b.GROUP_ID  groupId,
+		    b.USE_YN    useYn
+		FROM 
+			  CHMM_USER_INFO a
+		LEFT JOIN
+			  CHMM_USER_GROUP_MAP b
+		ON
+			  a.USER_ID = b.USER_ID
+		AND b.GROUP_ID IS NULL
+		ORDER BY
+		    a.USER_ID, b.GROUP_ID
+	</select>
+	
+	<insert id="insertGroupUser" parameterType="net.lotte.chamomile.admin.groupuser.domain.GroupUserVO">
+		INSERT INTO CHMM_USER_GROUP_MAP
+			 (GROUP_ID
+			 ,USER_ID
+			 ,SYS_INSERT_DTM
+			 ,SYS_INSERT_USER_ID)
+		VALUES
+			(#{groupId}
+			,#{userId}
+			,#{sysInsertDtm}
+			,#{sysInsertUserId})
+	</insert>
+
+  <insert id="insertGroupUserExcel" parameterType="net.lotte.chamomile.admin.groupuser.domain.GroupUserExcelVO">
+    INSERT INTO CHMM_USER_GROUP_MAP
+    (GROUP_ID
+    ,USER_ID
+    ,SYS_INSERT_DTM
+    ,SYS_INSERT_USER_ID)
+    VALUES
+      (#{groupId}
+      ,#{userId}
+      ,#{sysInsertDtm}
+      ,#{sysInsertUserId})
+  </insert>
+	
+	<delete id="deleteGroupUserByGroupId"  parameterType="java.util.List">
+		DELETE FROM
+			  CHMM_USER_GROUP_MAP
+		<where>
+			  GROUP_ID = #{groupId}
+		</where>
+	</delete>
+
+	<delete id="deleteGroupUserByUserId"  parameterType="java.util.List">
+		DELETE FROM
+			  CHMM_USER_GROUP_MAP
+		<where>
+			  USER_ID = #{userId}
+		</where>
+	</delete>
+
+<!--	<delete id="userGroupMapDeleteBulkByGroupId"  parameterType="net.lotte.chamomile.admin.group.vo.UserGroupMapVO">-->
+<!--		DELETE FROM-->
+<!--			CHMM_USER_GROUP_MAP-->
+<!--		<where>-->
+<!--			GROUP_ID IN -->
+<!--			<foreach collection="delKey" item="item" index="index" -->
+<!--				open="(" separator="," close=")">-->
+<!--				#{item}-->
+<!--			</foreach>	-->
+<!--		</where>-->
+<!--	</delete>-->
+<!--	-->
+<!--	&lt;!&ndash; 사용자 그룹 매핑 삭제 &ndash;&gt;-->
+<!--	<delete id="userGroupMapDeleteBulkByUserId" parameterType="net.lotte.chamomile.admin.group.vo.UserGroupMapVO">-->
+<!--		DELETE FROM-->
+<!--			CHMM_USER_GROUP_MAP-->
+<!--		<where>-->
+<!--			USER_ID IN -->
+<!--			<foreach collection="delKey" item="item" index="index" -->
+<!--				open="(" separator="," close=")">-->
+<!--				#{item}-->
+<!--			</foreach>			-->
+<!--		</where>-->
+<!--	</delete>-->
+<!--	-->
+<!--	<select id="userGroupMapSortedSet" resultType="net.lotte.chamomile.admin.group.vo.UserGroupMapVO">-->
+<!--		<![CDATA[-->
+<!--			SELECT-->
+<!--				GROUP_ID groupId,-->
+<!--				USER_ID userId-->
+<!--			FROM-->
+<!--				CHMM_USER_GROUP_MAP-->
+<!--		]]>-->
+<!--			ORDER BY GROUP_ID, USER_ID	-->
+<!--	</select>-->
+<!--	-->
+<!--	<select id="userGroupMapIdCheck" parameterType="net.lotte.chamomile.admin.group.vo.UserGroupMapVO" resultType="int">-->
+<!--		<![CDATA[-->
+<!--			SELECT -->
+<!--				COUNT(1)-->
+<!--			FROM-->
+<!--				CHMM_USER_GROUP_MAP-->
+<!--		]]>-->
+<!--			<where>-->
+<!--				USER_ID = #{searchUserId} AND-->
+<!--				GROUP_ID = #{searchGroupId}-->
+<!--			</where>-->
+<!--	</select>-->
+
+</mapper>

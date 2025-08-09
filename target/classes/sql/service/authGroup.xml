@@ -1,0 +1,82 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lotte.chamomile.admin.authgroup.domain.AuthGroupMapper">
+
+	<!-- 메뉴권한 상세 List 조회(Left) -->
+	<select id="findAuthGroupUnMappedList" parameterType="String" resultType="net.lotte.chamomile.admin.authtree.AuthTreeVO">
+		SELECT
+		    A.ROLE_ID   AS roleId
+		   ,A.ROLE_NAME AS roleName
+		FROM
+		    CHMM_ROLE_INFO A
+		LEFT JOIN
+		    CHMM_GROUP_ROLE_MAP B
+		ON
+		    A.ROLE_ID = B.ROLE_ID AND
+		    B.GROUP_ID = #{groupId}
+		WHERE
+		    B.ROLE_ID IS NULL
+		ORDER BY
+		    A.ROLE_ID
+
+	</select>
+
+  <select id="findAuthGroupList" parameterType="String" resultType="net.lotte.chamomile.admin.authtree.AuthTreeVO">
+    SELECT
+        A.ROLE_ID   AS roleId
+       ,A.ROLE_NAME AS roleName
+    FROM
+        CHMM_ROLE_INFO A
+    INNER JOIN
+        CHMM_GROUP_ROLE_MAP B
+    ON
+        A.ROLE_ID = B.ROLE_ID
+    WHERE
+        B.GROUP_ID = #{groupId}
+    ORDER BY
+        A.ROLE_ID
+
+  </select>
+
+	<!-- 그룹권한 저장 -->
+	<insert id="insertAuthGroup" parameterType="net.lotte.chamomile.admin.authgroup.domain.AuthGroupVO">
+		INSERT INTO CHMM_GROUP_ROLE_MAP
+		   (GROUP_ID
+			 ,ROLE_ID
+			 ,USE_YN
+			 ,SYS_INSERT_DTM
+			 ,SYS_INSERT_USER_ID)
+		VALUES
+		   (#{groupId}
+			 ,#{roleId}
+			 ,'1'
+       ,#{sysInsertDtm}
+       ,#{sysInsertUserId})
+	</insert>
+	
+	<!-- 그룹권한 삭제 -->
+	<delete id="deleteAuthGroup" parameterType="String">
+		DELETE 
+		FROM
+		    CHMM_GROUP_ROLE_MAP
+		WHERE
+		    GROUP_ID = #{groupId}
+	</delete>
+
+  <!-- 그룹권한 저장 -->
+  <insert id="insertAuthGroupExcel" parameterType="net.lotte.chamomile.admin.authgroup.domain.AuthGroupExcelVO">
+    INSERT INTO CHMM_GROUP_ROLE_MAP
+    (GROUP_ID
+    ,ROLE_ID
+    ,USE_YN
+    ,SYS_INSERT_DTM
+    ,SYS_INSERT_USER_ID)
+    VALUES
+      (#{groupId}
+      ,#{roleId}
+      ,#{useYn}
+      ,#{sysInsertDtm}
+      ,#{sysInserUserId})
+  </insert>
+
+	
+</mapper>

@@ -1,0 +1,170 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.lotte.chamomile.admin.auth.domain.AuthMapper">
+	
+	<!-- 권한 List 조회 -->
+	<select id="findAuthListDataPage" parameterType="net.lotte.chamomile.admin.auth.api.dto.AuthQuery" resultType="net.lotte.chamomile.admin.auth.domain.AuthVO">
+	<![CDATA[
+		SELECT 
+		     A.ROLE_ID       roleid                  /* 롤_아이디 */
+		    ,A.ROLE_NAME     rolename              /* 롤_명 */ 
+		    ,A.ROLE_DESC     roledesc              /* 롤_설명 */ 
+		    ,A.ROLE_START_DT rolestartdt       /* 롤_시작_일시 */ 
+		    ,A.ROLE_END_DT   roleenddt           /* 롤_종료_일시 */ 
+		    ,A.USE_YN USEYN                    /* 사용 여부 */ 
+		    ,A.SYS_INSERT_DTM sysInsertDtm     /* 시스템_입력_일시 */
+		    ,A.SYS_INSERT_USER_ID sysInsertUserId /* 시스템_입력_사용자_아이디 */ 
+		    ,A.SYS_UPDATE_DTM sysUpdateDtm        /* 시스템_수정_일시 */ 
+		    ,A.SYS_UPDATE_USER_ID sysUpdateUserId /* 시스템_수정_사용자_아이디 */ 
+		FROM CHMM_ROLE_INFO A
+
+ 	]]>
+		<!-- 검색조건 -->
+		<where>
+      <if test="searchRole != null and searchRole != ''">
+        <choose>
+          <when test="searchRoleType == 0">
+            AND ROLE_ID LIKE CONCAT(CONCAT('%', #{searchRole}), '%')
+          </when>
+          <when test="searchRoleType == 1">
+            AND ROLE_NAME LIKE CONCAT(CONCAT('%', #{searchRole}), '%')
+          </when>
+          <otherwise>
+            AND (ROLE_ID LIKE CONCAT(CONCAT('%', #{searchRole}), '%') OR ROLE_NAME LIKE CONCAT(CONCAT('%', #{searchRole}), '%'))
+          </otherwise>
+        </choose>
+      </if>
+			<if test="searchRoleId != null and searchRoleId != ''"> AND ROLE_ID LIKE CONCAT(CONCAT('%', #{searchRoleId}), '%')  </if>
+			<if test="searchRoleName != null and searchRoleName != ''"> AND ROLE_NAME LIKE CONCAT(CONCAT('%', #{searchRoleName}), '%') </if>
+			<if test="searchRoleStartDt != null and searchRoleStartDt != ''"> AND ROLE_START_DT <![CDATA[>=]]> #{searchRoleStartDt} </if>
+			<if test="searchRoleEndDt != null and searchRoleEndDt != ''"> AND ROLE_END_DT <![CDATA[<=]]> #{searchRoleEndDt}  </if>
+			<if test="searchUseYn != null and searchUseYn != ''"> AND USE_YN = #{searchUseYn}  </if>
+			AND A.ROLE_ID != 'root'
+		</where>
+	</select>
+
+  <!-- 권한 List 조회 -->
+  <select id="findAuthListData" parameterType="net.lotte.chamomile.admin.auth.api.dto.AuthQuery" resultType="net.lotte.chamomile.admin.auth.domain.AuthVO">
+    <![CDATA[
+		SELECT
+		     A.ROLE_ID       roleid                  /* 롤_아이디 */
+		    ,A.ROLE_NAME     rolename              /* 롤_명 */
+		    ,A.ROLE_DESC     roledesc              /* 롤_설명 */
+		    ,A.ROLE_START_DT rolestartdt       /* 롤_시작_일시 */
+		    ,A.ROLE_END_DT   roleenddt           /* 롤_종료_일시 */
+		    ,A.USE_YN USEYN                    /* 사용 여부 */
+		    ,A.SYS_INSERT_DTM sysInsertDtm     /* 시스템_입력_일시 */
+		    ,A.SYS_INSERT_USER_ID sysInsertUserId /* 시스템_입력_사용자_아이디 */
+		    ,A.SYS_UPDATE_DTM sysUpdateDtm        /* 시스템_수정_일시 */
+		    ,A.SYS_UPDATE_USER_ID sysUpdateUserId /* 시스템_수정_사용자_아이디 */
+		FROM CHMM_ROLE_INFO A
+
+ 	]]>
+    <!-- 검색조건 -->
+    <where>
+      <if test="searchRoleId != null and searchRoleId != ''"> AND ROLE_ID LIKE CONCAT(CONCAT('%', #{searchRoleId}), '%')  </if>
+      <if test="searchRoleName != null and searchRoleName != ''"> AND ROLE_NAME LIKE CONCAT(CONCAT('%', #{searchRoleName}), '%') </if>
+      <if test="searchRoleStartDt != null and searchRoleStartDt != ''"> AND ROLE_START_DT <![CDATA[>=]]> #{searchRoleStartDt} </if>
+      <if test="searchRoleEndDt != null and searchRoleEndDt != ''"> AND ROLE_END_DT <![CDATA[<=]]> #{searchRoleEndDt}  </if>
+      <if test="searchUseYn != null and searchUseYn != ''"> AND USE_YN = #{searchUseYn}  </if>
+      AND A.ROLE_ID != 'root'
+    </where>
+  </select>
+
+	<!-- 권한 저장 -->
+	<insert id="insertAuth" parameterType="net.lotte.chamomile.admin.auth.domain.AuthVO">
+		INSERT INTO CHMM_ROLE_INFO
+		(
+		ROLE_ID
+		,ROLE_NAME
+		,ROLE_DESC
+		,ROLE_START_DT
+		,ROLE_END_DT
+		,USE_YN
+		,SYS_INSERT_DTM
+		,SYS_INSERT_USER_ID
+		,SYS_UPDATE_DTM
+		,SYS_UPDATE_USER_ID
+		)VALUES (
+		#{roleId}
+		,#{roleName}
+		,#{roleDesc}
+		,#{roleStartDt}
+		,#{roleEndDt}
+		,#{useYn}
+		,#{sysInsertDtm}
+		,#{sysInsertUserId}
+		,#{sysUpdateDtm}
+		,#{sysUpdateUserId}
+		)
+	</insert>
+
+	<!-- 권한 수정 -->
+	<update id="updateAuth" parameterType="net.lotte.chamomile.admin.auth.domain.AuthVO">
+
+		UPDATE CHMM_ROLE_INFO
+		SET  ROLE_NAME= #{roleName}
+		,ROLE_DESC= #{roleDesc}
+		,ROLE_START_DT= #{roleStartDt}
+		,ROLE_END_DT= #{roleEndDt}
+    ,USE_YN= #{useYn}
+		,SYS_UPDATE_DTM = #{sysUpdateDtm}
+		,SYS_UPDATE_USER_ID = #{sysUpdateUserId}
+		<where>
+			AND ROLE_ID= #{roleId}
+		</where>
+	</update>
+
+	<!-- 권한 삭제 -->
+	<delete id="deleteAuth" parameterType="list">
+		DELETE FROM CHMM_ROLE_INFO
+		WHERE ROLE_ID = #{roleId}
+
+	</delete>
+
+	<select id="authIdCheck" parameterType="net.lotte.chamomile.admin.auth.domain.AuthVO" resultType="int">
+		<![CDATA[
+			SELECT
+				COUNT(1)
+			FROM
+				CHMM_ROLE_INFO
+		]]>
+		<where>
+			ROLE_ID = #{roleId}
+		</where>
+	</select>
+
+	<!-- 사용자 권한 삭제 -->
+	<delete id="deleteUserAuthAll" parameterType="net.lotte.chamomile.admin.auth.domain.AuthVO">
+		DELETE FROM CHMM_USER_ROLE_MAP
+		WHERE ROLE_ID = #{roleId}
+	</delete>
+
+	<!-- 그룹 권한 삭제 -->
+	<delete id="deleteGroupAuthAll" parameterType="net.lotte.chamomile.admin.auth.domain.AuthVO">
+		DELETE FROM CHMM_GROUP_ROLE_MAP
+		WHERE ROLE_ID = #{roleId}
+	</delete>
+
+	<!-- 리소스 권한 삭제 -->
+	<delete id="deleteResourceAuthAll" parameterType="net.lotte.chamomile.admin.auth.domain.AuthVO">
+		DELETE FROM CHMM_RESOURCE_ROLE_MAP
+		WHERE ROLE_ID = #{roleId}
+	</delete>
+
+	<!-- 메뉴 권한 삭제 -->
+	<delete id="deleteMenuAuthAll" parameterType="net.lotte.chamomile.admin.auth.domain.AuthVO">
+		DELETE FROM CHMM_ROLE_MENU_MAP
+		WHERE ROLE_ID = #{roleId}
+	</delete>
+
+	<!-- 다중 롤 그룹정보 삭제 -->
+	<delete id="deleteMultiAuthAll" parameterType="net.lotte.chamomile.admin.auth.domain.AuthVO">
+		DELETE FROM CHMM_MULTI_ROLE_GROUP_INFO
+		WHERE PARENT_ROLE_ID = #{roleId}
+		  OR CHILD_ROLE_ID = #{roleId}
+	</delete>
+
+
+
+</mapper>
