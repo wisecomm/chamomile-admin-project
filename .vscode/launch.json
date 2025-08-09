@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch ChamomileAdminApplication",
+      "request": "launch",
+      "mainClass": "net.lotte.chamomile.admin.ChamomileAdminApplication",
+      "projectName": "chamomile-admin-project",
+      "cwd": "${workspaceFolder}",
+      "args": "",
+      "vmArgs": "-Djasypt.encryptor.password=ldcc!2626",
+      "env": {},
+      "console": "internalConsole"
+    }
+  ]
+}
