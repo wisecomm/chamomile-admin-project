@@ -108,7 +108,7 @@ chmm:
 
     history:
         table-whitelist: CHMM_USER_INFO,CHMM_USER_ROLE_MAP
-        database-dialect: mysql
+        database-dialect: postgresql
         query-max-row: 1000
         table-suffix: _history
 

@@ -35,7 +35,7 @@
           AND C.COUNTRY_CODE = TA0.COUNTRY_CODE
           AND C.LANGUAGE_CODE = TA0.LANGUAGE_CODE
     <where>
-      <if test="searchType != null and searchType.equals('searchMessage') and searchText != null and searchText != ''"> AND C.MESSAGE LIKE CONCAT(CONCAT('%', #{searchText}), '%') </if>
+      <if test="searchType != null and searchType.equals('searchMessage') and searchText != null and searchText != ''"> AND C.MESSAGE LIKE '%' || #{searchText} || '%' </if>
       <if test="searchRegYn != null and searchRegYn != ''">
         <if test="searchRegYn.equals('1'.toString())">
           AND C.CODE IS NOT NULL

@@ -22,8 +22,8 @@
     ON
         A.CHILD_GROUP_ID = B.GROUP_ID
 		<where>
-			  <if test="searchGroupId != null and searchGroupId != ''"> AND B.GROUP_ID LIKE CONCAT(CONCAT('%',#{searchGroupId}),'%')  </if>
-			  <if test="searchGroupName != null and searchGroupName != ''"> AND B.GROUP_NAME LIKE CONCAT(CONCAT('%',#{searchGroupName}),'%')  </if>
+			  <if test="searchGroupId != null and searchGroupId != ''"> AND B.GROUP_ID LIKE '%' || #{searchGroupId} || '%'  </if>
+			  <if test="searchGroupName != null and searchGroupName != ''"> AND B.GROUP_NAME LIKE '%' || #{searchGroupName} || '%'  </if>
 			  <if test="searchUseYn != null and searchUseYn != ''"> AND B.USE_YN = #{searchUseYn}  </if>
         <if test="searchParentGroupId == 'null'"> AND A.PARENT_GROUP_ID IS NULL </if>
         <if test="searchParentGroupId != null and searchParentGroupId != '' and searchParentGroupId != 'null'"> AND A.PARENT_GROUP_ID = #{searchParentGroupId}  </if>
@@ -49,8 +49,8 @@
     ON
         A.CHILD_GROUP_ID = B.GROUP_ID
     <where>
-      <if test="searchGroupId != null and searchGroupId != ''"> AND B.GROUP_ID LIKE CONCAT(CONCAT('%',#{searchGroupId}),'%')  </if>
-      <if test="searchGroupName != null and searchGroupName != ''"> AND B.GROUP_NAME LIKE CONCAT(CONCAT('%',#{searchGroupName}),'%')  </if>
+      <if test="searchGroupId != null and searchGroupId != ''"> AND B.GROUP_ID LIKE '%' || #{searchGroupId} || '%'  </if>
+      <if test="searchGroupName != null and searchGroupName != ''"> AND B.GROUP_NAME LIKE '%' || #{searchGroupName} || '%'  </if>
       <if test="searchUseYn != null and searchUseYn != ''"> AND B.USE_YN = #{searchUseYn}  </if>
       <if test="searchParentGroupId == 'null'"> AND A.PARENT_GROUP_ID IS NULL </if>
       <if test="searchParentGroupId != null and searchParentGroupId != '' and searchParentGroupId != 'null'"> AND A.PARENT_GROUP_ID = #{searchParentGroupId}  </if>

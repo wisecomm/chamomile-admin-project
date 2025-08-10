@@ -22,8 +22,8 @@
     CHMM_RESOURCE_INFO A
     <!-- 검색조건 -->
     <where>
-      <if test="searchType != null and searchType.equals('searchResourceId') and searchValue != null and searchValue != ''">AND RESOURCE_ID LIKE CONCAT(CONCAT('%',#{searchValue}),'%')</if>
-      <if test="searchType != null and searchType.equals('searchResourceName') and searchValue != null and searchValue != ''">AND RESOURCE_NAME LIKE CONCAT(CONCAT('%',#{searchValue}),'%')</if>
+      <if test="searchType != null and searchType.equals('searchResourceId') and searchValue != null and searchValue != ''">AND RESOURCE_ID LIKE '%' || #{searchValue} || '%'</if>
+      <if test="searchType != null and searchType.equals('searchResourceName') and searchValue != null and searchValue != ''">AND RESOURCE_NAME LIKE '%' || #{searchValue} || '%'</if>
       <if test="searchUseYn != null and searchUseYn != ''">AND USE_YN = #{searchUseYn}</if>
     </where>
 
@@ -158,8 +158,8 @@
     CHMM_RESOURCE_INFO A
     <!-- 검색조건 -->
     <where>
-      <if test="searchType != null and searchType.equals('searchResourceId') and searchValue != null and searchValue != ''">AND RESOURCE_ID LIKE CONCAT(CONCAT('%',#{searchValue}),'%')</if>
-      <if test="searchType != null and searchType.equals('searchResourceName') and searchValue != null and searchValue != ''">AND RESOURCE_NAME LIKE CONCAT(CONCAT('%',#{searchValue}),'%')</if>
+      <if test="searchType != null and searchType.equals('searchResourceId') and searchValue != null and searchValue != ''">AND RESOURCE_ID LIKE '%' || #{searchValue} || '%'</if>
+      <if test="searchType != null and searchType.equals('searchResourceName') and searchValue != null and searchValue != ''">AND RESOURCE_NAME LIKE '%' || #{searchValue} || '%'</if>
       <if test="searchUseYn != null and searchUseYn != ''">AND USE_YN = #{searchUseYn}</if>
     </where>
 

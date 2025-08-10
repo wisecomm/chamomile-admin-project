@@ -126,8 +126,8 @@
         A.CHILD_ROLE_ID = C.ROLE_ID
 	 	]]>
     <where>
-      <if test="searchParentRoleId != null and searchParentRoleId != ''"> OR PARENT_ROLE_ID LIKE CONCAT(CONCAT('%',#{searchParentRoleId}),'%')  </if>
-      <if test="searchChildRoleId != null and searchChildRoleId != ''"> OR CHILD_ROLE_ID LIKE CONCAT(CONCAT('%',#{searchChildRoleId}),'%')  </if>
+      <if test="searchParentRoleId != null and searchParentRoleId != ''"> OR PARENT_ROLE_ID LIKE '%' || #{searchParentRoleId} || '%'  </if>
+      <if test="searchChildRoleId != null and searchChildRoleId != ''"> OR CHILD_ROLE_ID LIKE '%' || #{searchChildRoleId} || '%'  </if>
     </where>
   </select>
 

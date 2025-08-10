@@ -62,8 +62,8 @@
  	]]>
     <!-- 검색조건 -->
     <where>
-      <if test="searchRoleId != null and searchRoleId != ''"> AND ROLE_ID LIKE CONCAT(CONCAT('%', #{searchRoleId}), '%')  </if>
-      <if test="searchRoleName != null and searchRoleName != ''"> AND ROLE_NAME LIKE CONCAT(CONCAT('%', #{searchRoleName}), '%') </if>
+      <if test="searchRoleId != null and searchRoleId != ''"> AND ROLE_ID LIKE '%' || #{searchRoleId} || '%'  </if>
+      <if test="searchRoleName != null and searchRoleName != ''"> AND ROLE_NAME LIKE '%' || #{searchRoleName} || '%' </if>
       <if test="searchRoleStartDt != null and searchRoleStartDt != ''"> AND ROLE_START_DT <![CDATA[>=]]> #{searchRoleStartDt} </if>
       <if test="searchRoleEndDt != null and searchRoleEndDt != ''"> AND ROLE_END_DT <![CDATA[<=]]> #{searchRoleEndDt}  </if>
       <if test="searchUseYn != null and searchUseYn != ''"> AND USE_YN = #{searchUseYn}  </if>

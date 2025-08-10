@@ -137,12 +137,12 @@
     FROM CHMM_USER_ACCESS_LOGGING
     <!-- 검색조건 -->
     <where>
-      <if test="searchClientIp != null and searchClientIp != ''">AND CLIENT_IP LIKE CONCAT(CONCAT('%', #{searchClientIp}), '%')</if>
-      <if test="searchRequestUrl != null and searchRequestUrl != ''">AND REQUEST_URL LIKE CONCAT(CONCAT('%', #{searchRequestUrl}), '%')</if>
-      <if test="searchRequestId != null and searchRequestId != ''">AND REQUEST_ID LIKE CONCAT(CONCAT('%', #{searchRequestId}), '%')</if>
-      <if test="searchSessionId != null and searchSessionId != ''">AND SESSION_ID LIKE CONCAT(CONCAT('%', #{searchSessionId}), '%')</if>
-      <if test="searchLoginUserId != null and searchLoginUserId != ''">AND LOGIN_USER_ID LIKE CONCAT(CONCAT('%', #{searchLoginUserId}), '%')</if>
-      <if test="searchUserAccessActionType != null and searchUserAccessActionType != ''">AND USER_ACCESS_ACTION_TYPE LIKE CONCAT(CONCAT('%', #{searchUserAccessActionType}), '%')</if>
+      <if test="searchClientIp != null and searchClientIp != ''">AND CLIENT_IP LIKE '%' || #{searchClientIp} || '%'</if>
+      <if test="searchRequestUrl != null and searchRequestUrl != ''">AND REQUEST_URL LIKE '%' || #{searchRequestUrl} || '%'</if>
+      <if test="searchRequestId != null and searchRequestId != ''">AND REQUEST_ID LIKE '%' || #{searchRequestId} || '%'</if>
+      <if test="searchSessionId != null and searchSessionId != ''">AND SESSION_ID LIKE '%' || #{searchSessionId} || '%'</if>
+      <if test="searchLoginUserId != null and searchLoginUserId != ''">AND LOGIN_USER_ID LIKE '%' || #{searchLoginUserId} || '%'</if>
+      <if test="searchUserAccessActionType != null and searchUserAccessActionType != ''">AND USER_ACCESS_ACTION_TYPE LIKE '%' || #{searchUserAccessActionType} || '%'</if>
     </where>
     ) A
     <where>

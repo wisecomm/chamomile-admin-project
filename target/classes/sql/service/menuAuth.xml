@@ -104,7 +104,7 @@
         FROM CHMM_ROLE_MENU_MAP A
         INNER JOIN CHMM_ROLE_INFO B ON A.ROLE_ID = B.ROLE_ID
         <where>
-            <if test="searchRoleName != null and searchRoleName != ''"> AND B.ROLE_NAME LIKE CONCAT(CONCAT('%', #{searchRoleName}), '%') </if>
+            <if test="searchRoleName != null and searchRoleName != ''"> AND B.ROLE_NAME LIKE '%' || #{searchRoleName} || '%' </if>
             <if test="searchRoleStartDt != null and searchRoleStartDt != ''"> AND B.ROLE_START_DT <![CDATA[>=]]> #{searchRoleStartDt} </if>
             <if test="searchRoleEndDt != null and searchRoleEndDt != ''"> AND B.ROLE_END_DT <![CDATA[<=]]> #{searchRoleEndDt}  </if>
             <if test="searchUseYn != null and searchUseYn != ''"> AND B.USE_YN = #{searchUseYn}  </if>

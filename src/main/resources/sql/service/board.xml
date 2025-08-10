@@ -21,8 +21,8 @@
         FROM CHMM_BOARD_INFO A
         <where>
             <if test="boardType != null and boardType != ''"> AND BOARD_TYPE = #{boardType} </if>
-            <if test="searchType != null and searchType.equals('searchTitle') and searchValue != null and searchValue != ''"> AND TITLE LIKE CONCAT(CONCAT('%', #{searchValue}),'%')</if>
-            <if test="searchType != null and searchType.equals('searchContents') and searchValue != null and searchValue != ''"> AND CONTENTS LIKE CONCAT(CONCAT('%', #{searchValue}),'%')</if>
+            <if test="searchType != null and searchType.equals('searchTitle') and searchValue != null and searchValue != ''"> AND TITLE LIKE '%' || #{searchValue} || '%'</if>
+            <if test="searchType != null and searchType.equals('searchContents') and searchValue != null and searchValue != ''"> AND CONTENTS LIKE '%' || #{searchValue} || '%'</if>
             <if test="searchType != null and searchType.equals('searchRegisterId') and searchValue != null and searchValue != ''"> AND SYS_INSERT_USER_ID = #{searchValue} </if>
             <if test="applyStartDtm != null and applyStartDtm != ''"> AND APPLY_START_DTM <![CDATA[>=]]> #{applyStartDtm} </if>
             <if test="applyEndDtm != null and applyEndDtm != ''"> AND APPLY_END_DTM <![CDATA[<]]> #{applyEndDtm} </if>

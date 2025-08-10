@@ -26,13 +26,13 @@
         <where>
             MENU_ID != 'root'
             <if test=" searchMenuType == null and searchMenu != null and searchMenu != '' ">
-                AND MENU_NAME LIKE CONCAT(CONCAT('%', #{searchMenu}),'%') OR MENU_URI LIKE CONCAT(CONCAT('%', #{searchMenu}),'%')
+                AND MENU_NAME LIKE '%' || #{searchMenu} || '%' OR MENU_URI LIKE '%' || #{searchMenu} || '%'
             </if>
             <if test=" searchMenuType == 0 and searchMenu != null and searchMenu != '' ">
-              AND MENU_NAME LIKE CONCAT(CONCAT('%', #{searchMenu}),'%')
+              AND MENU_NAME LIKE '%' || #{searchMenu} || '%'
             </if>
             <if test=" searchMenuType == 1 and searchMenu != null and searchMenu != '' ">
-              AND MENU_URI LIKE CONCAT(CONCAT('%', #{searchMenu}),'%')
+              AND MENU_URI LIKE '%' || #{searchMenu} || '%'
             </if>
             <if test="searchUseYn != null and searchUseYn != ''">
                 AND USE_YN = #{searchUseYn}
@@ -41,7 +41,7 @@
                 AND UPPER_MENU_ID = #{searchUpperMenuId}
             </if>
             <if test="searchMenuHelpUri != null and searchMenuHelpUri != ''">
-                AND MENU_HELP_URI LIKE CONCAT(CONCAT('%', #{searchMenuHelpUri}), '%')
+                AND MENU_HELP_URI LIKE '%' || #{searchMenuHelpUri} || '%'
             </if>
         </where>
         ORDER BY MENU_LVL,UPPER_MENU_ID,MENU_SEQ

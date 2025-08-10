@@ -31,12 +31,12 @@
  	]]>
         <!-- 검색조건 -->
         <where>
-            <if test="searchSelect != null and searchSelect.equals('searchUserId') and searchValue != null and searchValue != ''"> AND USER_ID LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
-            <if test="searchSelect != null and searchSelect.equals('searchUserName') and searchValue != null and searchValue != ''"> AND USER_NAME LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
-            <if test="searchSelect != null and searchSelect.equals('searchUserEmail') and searchValue != null and searchValue != ''"> AND USER_EMAIL LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
-            <if test="searchUserId != null and searchUserId != ''"> AND USER_ID LIKE CONCAT(CONCAT('%',#{searchUserId}),'%')  </if>
-            <if test="searchUserName != null and searchUserName != ''"> AND USER_NAME LIKE CONCAT(CONCAT('%',#{searchUserName}),'%')  </if>
-            <if test="searchUserMobile != null and searchUserMobile != ''"> AND USER_MOBILE LIKE CONCAT(CONCAT('%',#{searchUserMobile}),'%')  </if>
+            <if test="searchSelect != null and searchSelect.equals('searchUserId') and searchValue != null and searchValue != ''"> AND USER_ID LIKE '%' || #{searchValue} || '%'  </if>
+            <if test="searchSelect != null and searchSelect.equals('searchUserName') and searchValue != null and searchValue != ''"> AND USER_NAME LIKE '%' || #{searchValue} || '%'  </if>
+            <if test="searchSelect != null and searchSelect.equals('searchUserEmail') and searchValue != null and searchValue != ''"> AND USER_EMAIL LIKE '%' || #{searchValue} || '%'  </if>
+            <if test="searchUserId != null and searchUserId != ''"> AND USER_ID LIKE '%' || #{searchUserId} || '%'  </if>
+            <if test="searchUserName != null and searchUserName != ''"> AND USER_NAME LIKE '%' || #{searchUserName} || '%'  </if>
+            <if test="searchUserMobile != null and searchUserMobile != ''"> AND USER_MOBILE LIKE '%' || #{searchUserMobile} || '%'  </if>
             <if test="searchUseYn != null and searchUseYn != ''"> AND USE_YN = #{searchUseYn}  </if>
         </where>
     </select>
@@ -66,7 +66,7 @@
         <if test="mobileFlag.equals('true')">
             A.MDM_YN as mdmYn, /* 모바일기능 사용여부 */
         </if>
-        GROUP_CONCAT(C.GROUP_NAME) as userGroups /* 사용자 그룹 */
+        STRING_AGG(C.GROUP_NAME, ',') as userGroups /* 사용자 그룹 */
     FROM
         CHMM_USER_INFO A
     LEFT JOIN CHMM_USER_GROUP_MAP B
@@ -74,12 +74,12 @@
     LEFT JOIN CHMM_GROUP_INFO C
         ON B.GROUP_ID = C.GROUP_ID
     <where>
-      <if test="searchSelect != null and searchSelect.equals('searchUserId') and searchValue != null and searchValue != ''"> AND A.USER_ID LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
-      <if test="searchSelect != null and searchSelect.equals('searchUserName') and searchValue != null and searchValue != ''"> AND A.USER_NAME LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
-      <if test="searchSelect != null and searchSelect.equals('searchUserEmail') and searchValue != null and searchValue != ''"> AND A.USER_EMAIL LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
-      <if test="searchUserId != null and searchUserId != ''"> AND A.USER_ID LIKE CONCAT(CONCAT('%',#{searchUserId}),'%')  </if>
-      <if test="searchUserName != null and searchUserName != ''"> AND A.USER_NAME LIKE CONCAT(CONCAT('%',#{searchUserName}),'%')  </if>
-      <if test="searchUserMobile != null and searchUserMobile != ''"> AND A.USER_MOBILE LIKE CONCAT(CONCAT('%',#{searchUserMobile}),'%')  </if>
+      <if test="searchSelect != null and searchSelect.equals('searchUserId') and searchValue != null and searchValue != ''"> AND A.USER_ID LIKE '%' || #{searchValue} || '%'  </if>
+      <if test="searchSelect != null and searchSelect.equals('searchUserName') and searchValue != null and searchValue != ''"> AND A.USER_NAME LIKE '%' || #{searchValue} || '%'  </if>
+      <if test="searchSelect != null and searchSelect.equals('searchUserEmail') and searchValue != null and searchValue != ''"> AND A.USER_EMAIL LIKE '%' || #{searchValue} || '%'  </if>
+      <if test="searchUserId != null and searchUserId != ''"> AND A.USER_ID LIKE '%' || #{searchUserId} || '%'  </if>
+      <if test="searchUserName != null and searchUserName != ''"> AND A.USER_NAME LIKE '%' || #{searchUserName} || '%'  </if>
+      <if test="searchUserMobile != null and searchUserMobile != ''"> AND A.USER_MOBILE LIKE '%' || #{searchUserMobile} || '%'  </if>
       <if test="searchUseYn != null and searchUseYn != ''"> AND A.USE_YN = #{searchUseYn}  </if>
       <if test="mobileFlag.equals('true')">
         <if test="searchMdmYn != null and searchMdmYn != ''">AND A.MDM_YN = #{searchMdmYn}  </if>
@@ -87,7 +87,7 @@
     </where>
     GROUP BY A.USER_ID
     HAVING 1=1
-        <if test="searchUserGroup != null and searchUserGroup != ''"> AND userGroups LIKE CONCAT(CONCAT('%', #{searchUserGroup}), '%') </if>
+        <if test="searchUserGroup != null and searchUserGroup != ''"> AND userGroups LIKE '%' || #{searchUserGroup} || '%' </if>
   </select>
 
   <!-- 사용자 List 조회 -->
@@ -119,12 +119,12 @@
  	]]>
     <!-- 검색조건 -->
     <where>
-      <if test="searchSelect.equals('searchUserId') and searchValue != null and searchValue != ''"> AND USER_ID LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
-      <if test="searchSelect.equals('searchUserName') and searchValue != null and searchValue != ''"> AND USER_NAME LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
-      <if test="searchSelect.equals('searchUserEmail') and searchValue != null and searchValue != ''"> AND USER_EMAIL LIKE CONCAT(CONCAT('%',#{searchValue}),'%')  </if>
-      <if test="searchUserId != null and searchUserId != ''"> AND USER_ID LIKE CONCAT(CONCAT('%',#{searchUserId}),'%')  </if>
-      <if test="searchUserName != null and searchUserName != ''"> AND USER_NAME LIKE CONCAT(CONCAT('%',#{searchUserName}),'%')  </if>
-      <if test="searchUserMobile != null and searchUserMobile != ''"> AND USER_MOBILE LIKE CONCAT(CONCAT('%',#{searchUserMobile}),'%')  </if>
+      <if test="searchSelect.equals('searchUserId') and searchValue != null and searchValue != ''"> AND USER_ID LIKE '%' || #{searchValue} || '%'  </if>
+      <if test="searchSelect.equals('searchUserName') and searchValue != null and searchValue != ''"> AND USER_NAME LIKE '%' || #{searchValue} || '%'  </if>
+      <if test="searchSelect.equals('searchUserEmail') and searchValue != null and searchValue != ''"> AND USER_EMAIL LIKE '%' || #{searchValue} || '%'  </if>
+      <if test="searchUserId != null and searchUserId != ''"> AND USER_ID LIKE '%' || #{searchUserId} || '%'  </if>
+      <if test="searchUserName != null and searchUserName != ''"> AND USER_NAME LIKE '%' || #{searchUserName} || '%'  </if>
+      <if test="searchUserMobile != null and searchUserMobile != ''"> AND USER_MOBILE LIKE '%' || #{searchUserMobile} || '%'  </if>
       <if test="searchUseYn != null and searchUseYn != ''"> AND USE_YN = #{searchUseYn}  </if>
     </where>
   </select>

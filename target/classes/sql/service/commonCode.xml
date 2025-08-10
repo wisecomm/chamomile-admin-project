@@ -84,10 +84,10 @@
           AND CODE_ID = #{searchCodeId}
       </if>
       <if test="searchCodeItemId != null and searchCodeItemId != ''">
-        AND CODE_ITEM_ID LIKE CONCAT(CONCAT('%', #{searchCodeItemId}), '%')
+        AND CODE_ITEM_ID LIKE '%' || #{searchCodeItemId} || '%'
       </if>
       <if test="searchCodeItemDesc != null and searchCodeItemDesc != ''">
-        AND CODE_ITEM_DESC LIKE CONCAT(CONCAT('%', #{searchCodeItemDesc}),'%')
+        AND CODE_ITEM_DESC LIKE '%' || #{searchCodeItemDesc} || '%'
       </if>
       <if test="searchUseYn != null and searchUseYn != ''">
         AND USE_YN = #{searchUseYn}

@@ -20,7 +20,7 @@
       <if test="searchStartLogDate != null and searchStartLogDate != ''">AND SYS_INSERT_DTM >= #{searchStartLogDate}</if>
       <if test="searchEndLogDate != null and searchEndLogDate != ''">AND SYS_INSERT_DTM <![CDATA[<]]> #{searchEndLogDate}</if>
       <if test="searchWebpageLogId != null and searchWebpageLogId != ''">AND WEBPAGE_LOG_ID = #{searchWebpageLogId}</if>
-      <if test="searchUrl != null and searchUrl != ''">AND URL LIKE CONCAT(CONCAT('%',#{searchUrl}),'%')</if>
+      <if test="searchUrl != null and searchUrl != ''">AND URL LIKE '%' || #{searchUrl} || '%'</if>
       <if test="searchSysInsertUserId != null and searchSysInsertUserId != ''">AND SYS_INSERT_USER_ID = #{searchSysInsertUserId}</if>
       <if test="searchStartLogDate != null and searchStartLogDate != ''">AND SYS_INSERT_DTM &gt;= #{searchStartLogDate}</if>
       <if test="searchEndLogDate != null and searchEndLogDate != ''">AND SYS_INSERT_DTM &lt; #{searchEndLogDate}</if>

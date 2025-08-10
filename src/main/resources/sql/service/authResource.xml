@@ -152,8 +152,8 @@
     CHMM_RESOURCE_INFO A
     <!-- 검색조건 -->
     <where>
-      <if test="searchResourceId != null and searchResourceId != ''">AND RESOURCE_ID LIKE CONCAT(CONCAT('%',#{searchResourceId}),'%')</if>
-      <if test="searchResourceName != null and searchResourceName != ''">AND RESOURCE_NAME LIKE CONCAT(CONCAT('%',#{searchResourceName}),'%')</if>
+      <if test="searchResourceId != null and searchResourceId != ''">AND RESOURCE_ID LIKE '%' || #{searchResourceId} || '%'</if>
+      <if test="searchResourceName != null and searchResourceName != ''">AND RESOURCE_NAME LIKE '%' || #{searchResourceName} || '%'</if>
       <if test="searchUseYn != null and searchUseYn != ''">AND USE_YN = #{searchUseYn}</if>
     </where>
 
