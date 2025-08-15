@@ -16,6 +16,8 @@
   <properties>
     <argLine/> <!-- 혹시라도 jacoco plugin 이 동작하지 않을 때 빈 값이 필요하므로 추가함. -->
     <main.basedir>${basedir}/..</main.basedir>
+    <!-- Maven 로컬 저장소 경로 지정 -->
+    <maven.repo.local>/Users/ojeong-il/XXX-JAVA/repo</maven.repo.local>
   </properties>
 
    <repositories>
