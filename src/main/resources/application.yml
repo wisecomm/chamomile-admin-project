@@ -1,3 +1,4 @@
+debug: true
 spring:
   application:
     name: chamomile-admin # 애플리케이션의 이름을 지정합니다.
@@ -86,7 +87,7 @@ chmm:
   #Hikari DataSource
   jdbc:
     driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    jdbcUrl: jdbc:log4jdbc:postgresql://211.188.55.104:5432/chamomile
+    jdbcUrl: jdbc:log4jdbc:postgresql://144.24.77.235:5432/chamomile
     username: postgres
     password: postgres123
     maximumPoolSize: 10
